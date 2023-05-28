@@ -27,7 +27,10 @@ class UVSim:
     def read_memory(self):
         while True:
             try:
-                self.memory[self.operand] = int(input("Enter an integer from -9999 to +9999: "))
+                value = int(input("Enter an integer from -9999 to +9999: "))
+                if value < -9999 or value > 9999:
+                    raise ValueError
+                self.memory[self.operand] = value
                 break
             except ValueError:
                 print("Invalid input. Try again.")
@@ -45,15 +48,12 @@ class UVSim:
             self.operand = abs(self.instruction_register) % 100
 
             if self.operation_code == 10:  # w/ READ
-                # self.memory[self.operand] = int(input("Enter an integer from -9999 to +9999: "))
                 self.read_memory()
             elif self.operation_code == 11:  # WRITE
-                # print(self.memory[self.operand])
                 self.write_memory()
             elif self.operation_code == 20:  # LOAD
                 self.accumulator = self.memory[self.operand]
             elif self.operation_code == 21:  # STORE
-                # self.memory[self.operand] = self.accumulator
                 self.store_memory()
             elif self.operation_code == 30:  # ADD
                 self.accumulator += self.memory[self.operand]
