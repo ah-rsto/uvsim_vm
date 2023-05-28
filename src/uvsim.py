@@ -22,6 +22,21 @@ class UVSim:
                 break
             except FileNotFoundError:
                 print("File not found. Try again.")
+
+
+    def read_memory(self):
+        while True:
+            try:
+                self.memory[self.operand] = int(input("Enter an integer from -9999 to +9999: "))
+                break
+            except ValueError:
+                print("Invalid input. Try again.")
+
+    def write_memory(self):
+        print(self.memory[self.operand])
+
+    def store_memory(self):
+        self.memory[self.operand] = self.accumulator
         
     def execute_program(self):
         while True:
@@ -30,13 +45,16 @@ class UVSim:
             self.operand = abs(self.instruction_register) % 100
 
             if self.operation_code == 10:  # w/ READ
-                self.memory[self.operand] = int(input("Enter an integer from -9999 to +9999: "))
+                # self.memory[self.operand] = int(input("Enter an integer from -9999 to +9999: "))
+                self.read_memory()
             elif self.operation_code == 11:  # WRITE
-                print(self.memory[self.operand])
+                # print(self.memory[self.operand])
+                self.write_memory()
             elif self.operation_code == 20:  # LOAD
                 self.accumulator = self.memory[self.operand]
             elif self.operation_code == 21:  # STORE
-                self.memory[self.operand] = self.accumulator
+                # self.memory[self.operand] = self.accumulator
+                self.store_memory()
             elif self.operation_code == 30:  # ADD
                 self.accumulator += self.memory[self.operand]
             elif self.operation_code == 31:  # SUBTRACT
