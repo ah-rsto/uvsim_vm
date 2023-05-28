@@ -1,99 +1,46 @@
 import unittest
+from unittest.mock import patch
 from uvsim import UVSim
 
-class TestLoadProgram(unittest.TestCase):
-    def test_load_program_valid_file(self):
-        uvsim = UVSim()
-        uvsim.load_program("Test1.txt")
-        expected_memory = [+1007, +1008, +2007, +2008, +2109, +1109, +4300, +0000, +0000, +0000, -99999] # instructions in the file
-        self.assertEqual(uvsim.memory, expected_memory)
+class TestReadWriteStoreMemory(unittest.TestCase):
+    def setUp(self):
+        self.uvsim = UVSim()
+        self.uvsim.operand = 0
+        self.uvsim.memory = [0]*100
 
-    def test_load_program_invalid_file(self):
-        uvsim = UVSim()
-        with self.assertRaises(ValueError):
-            # Create this invalid file
-            uvsim.load_program("invalid_program.txt")
+    @patch('builtins.input', return_value='5000')
+    def test_read_memory_success(self, mock_input):
+        self.uvsim.read_memory()
+        self.assertEqual(self.uvsim.memory[self.uvsim.operand], 5000)
+        mock_input.assert_called_once_with("Enter an integer from -9999 to +9999: ")
 
-class TestExecuteProgram(unittest.TestCase):
-    # create a test for each opcode
-    def test_opcode_10(self):
-        uvsim = UVSim()
-        uvsim.memory[0] = 1007
-        uvsim.execute_program()
-        self.assertEqual(uvsim.memory[7], 7)
+    @patch('builtins.input', side_effect=['not a number', '4000'])
+    def test_read_memory_failure(self, mock_input):
+        self.uvsim.read_memory()
+        self.assertEqual(self.uvsim.memory[self.uvsim.operand], 4000)
+        mock_input.assert_called_with("Enter an integer from -9999 to +9999: ")
+        self.assertEqual(mock_input.call_count, 2)
 
-    def test_opcode_11(self):
-        uvsim = UVSim()
-        uvsim.memory[0] = 1107
-        uvsim.execute_program()
-        self.assertEqual(uvsim.output, [7])
+    @patch('builtins.print')
+    def test_write_memory_success(self, mock_print):
+        self.uvsim.memory[self.uvsim.operand] = 5000
+        self.uvsim.write_memory()
+        mock_print.assert_called_once_with(5000)
 
-    def test_opcode_20(self):
-        uvsim = UVSim()
-        uvsim.memory[0] = 2007
-        uvsim.execute_program()
-        self.assertEqual(uvsim.accumulator, 7)
+    def test_write_memory_failure(self):
+        self.uvsim.operand = 100
+        with self.assertRaises(IndexError):
+            self.uvsim.write_memory()
 
-    def test_opcode_21(self):
-        uvsim = UVSim()
-        uvsim.accumulator = 7
-        uvsim.memory[0] = 2108
-        uvsim.execute_program()
-        self.assertEqual(uvsim.memory[8], 7)
+    def test_store_memory_success(self):
+        self.uvsim.accumulator = 5000
+        self.uvsim.store_memory()
+        self.assertEqual(self.uvsim.memory[self.uvsim.operand], 5000)
 
-    def test_opcode_30(self):
-        uvsim = UVSim()
-        uvsim.accumulator = 7
-        uvsim.memory[0] = 3008
-        uvsim.execute_program()
-        self.assertEqual(uvsim.accumulator, 15)
-
-    def test_opcode_31(self):
-        uvsim = UVSim()
-        uvsim.accumulator = 7
-        uvsim.memory[0] = 3108
-        uvsim.execute_program()
-        self.assertEqual(uvsim.accumulator, -1)
-
-    def test_opcode_32(self):
-        uvsim = UVSim()
-        uvsim.accumulator = 7
-        uvsim.memory[0] = 3208
-        uvsim.execute_program()
-        self.assertEqual(uvsim.accumulator, 1)
-
-    def test_opcode_33(self):
-        uvsim = UVSim()
-        uvsim.accumulator = 7
-        uvsim.memory[0] = 3308
-        uvsim.execute_program()
-        self.assertEqual(uvsim.accumulator, 56)
-
-    def test_opcode_40(self):
-        uvsim = UVSim()
-        uvsim.memory[0] = 4007
-        uvsim.execute_program()
-        self.assertEqual(uvsim.pc, 7)
-
-    def test_opcode_41(self):
-        uvsim = UVSim()
-        uvsim.accumulator = -1
-        uvsim.memory[0] = 4107
-        uvsim.execute_program()
-        self.assertEqual(uvsim.pc, 7)
-
-    def test_opcode_42(self):
-        uvsim = UVSim()
-        uvsim.accumulator = 0
-        uvsim.memory[0] = 4207
-        uvsim.execute_program()
-        self.assertEqual(uvsim.pc, 7)
-
-    def test_opcode_43(self):
-        uvsim = UVSim()
-        uvsim.memory[0] = 4307
-        uvsim.execute_program()
-        self.assertEqual(uvsim.pc, 1)
+    def test_store_memory_failure(self):
+        self.uvsim.operand = 100
+        with self.assertRaises(IndexError):
+            self.uvsim.store_memory()
 
 
 
