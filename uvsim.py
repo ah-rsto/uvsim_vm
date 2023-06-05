@@ -40,6 +40,9 @@ class UVSim:
 
     def store_memory(self):
         self.memory[self.operand] = self.accumulator
+
+    def load_memory(self):
+        self.accumulator = self.memory[self.operand]
         
     def execute_program(self):
         while True:
@@ -47,47 +50,58 @@ class UVSim:
             self.operation_code = abs(self.instruction_register) // 100
             self.operand = abs(self.instruction_register) % 100
 
-            if self.operation_code == 10:  # w/ READ
-                self.read_memory()
-            elif self.operation_code == 11:  # WRITE
-                self.write_memory()
-            elif self.operation_code == 20:  # LOAD
-                self.accumulator = self.memory[self.operand]
-            elif self.operation_code == 21:  # STORE
-                self.store_memory()
-            elif self.operation_code == 30:  # ADD
-                self.accumulator += self.memory[self.operand]
-            elif self.operation_code == 31:  # SUBTRACT
-                self.accumulator -= self.memory[self.operand]
-            elif self.operation_code == 32:  # DIVIDE
-                self.accumulator //= self.memory[self.operand]
-            elif self.operation_code == 33:  # MULTIPLY
-                self.accumulator *= self.memory[self.operand]
-            elif self.operation_code == 40:  # BRANCH
-                self.instruction_counter = self.operand
-                continue
-            elif self.operation_code == 41:  # BRANCHNEG
-                if self.accumulator < 0:
+            match self.operation_code:
+                case 10:  # w/ READ
+                    self.read_memory()
+                case 11: # WRITE
+                    self.write_memory()
+                case 20: # LOAD
+                    self.load_memory()
+                case 21: # STORE
+                    self.store_memory()
+                case 30: # ADD
+                    # self.addition()
+                    self.accumulator += self.memory[self.operand]
+                case 31: # SUBTRACT
+                    # self.subtraction()
+                    self.accumulator -= self.memory[self.operand]
+                case 32: # DIVIDE
+                    # self.division()
+                    self.accumulator //= self.memory[self.operand]
+                case 33: # MULTIPLY
+                    # self.multiplication()
+                    self.accumulator *= self.memory[self.operand]
+                case 40: # BRANCH
+                    # self.branch()
                     self.instruction_counter = self.operand
                     continue
-            elif self.operation_code == 42:  # BRANCHZERO
-                if self.accumulator == 0:
-                    self.instruction_counter = self.operand
-                    continue
-            elif self.operation_code == 43:  # HALT
-                print("Program execution completed.")
-                break
+                case 41: # BRANCHNEG
+                    if self.accumulator < 0:
+                        # self.branch_negative()
+                        self.instruction_counter = self.operand
+                        continue
+                case 42: # BRANCHZERO
+                    if self.accumulator == 0:
+                        # self.branch_zero()
+                        self.instruction_counter = self.operand
+                        continue
+                case 43: # HALT
+                    #!!!!CJ call halt here or is robby wanting just this?
+                    print("Program execution completed.") 
+                    # break inside of halt wouldn't work unless inside of loop.
+                    break
+                case _:
+                    print(
+                        f"Invalid operation code '{self.operation_code}'. \n"
+                        "Program terminated"
+                    )
+                    break
 
             self.instruction_counter += 1
 
 
 def main():
     """Main script driver."""
-    #TODO: Validate request
-
-    #TODO: Determine operation
-
-    #TODO: Return result
     uv_sim = UVSim()
     uv_sim.load_program()
     uv_sim.execute_program()
@@ -95,6 +109,5 @@ def main():
     pass
 
 if __name__ == "__main__":
-    #TODO: Handle terminal calls
 
     main()
