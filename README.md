@@ -6,7 +6,7 @@ UVSIM - A Simple Machine Language Simulator
 Prerequisites:
 ----------------
 Before you begin, ensure you have met the following requirements:
-- You have installed Python 3.6 or later.
+- You have installed Python 3.10 or later.
 - You have a basic understanding of command-line interfaces.
 - The files that you are testing are in the same directory as uvsim.py
 
