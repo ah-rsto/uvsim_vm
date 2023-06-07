@@ -141,11 +141,7 @@ class UnitTests(unittest.TestCase):
             self.S.halt()
             mock_exit.assert_called_once_with("Program Halted")
 
-    '''
-        #test no halt command
-    def test_no_halt(self): 
-        pass
-    '''
+
 
 
 
