@@ -2,7 +2,7 @@
 
 DOCUMENT
 """
-
+# Team collaboration
 class UVSim:
     def __init__(self):
         self.memory = [0]*100
@@ -12,6 +12,7 @@ class UVSim:
         self.operation_code = 0
         self.operand = 0
 
+    # Team collaboration
     def load_program(self):
         while True:
             file_name = input("Enter the name of the file to load: ")
@@ -23,7 +24,7 @@ class UVSim:
             except FileNotFoundError:
                 print("File not found. Try again.")
 
-
+    # Taylie's code
     def read_memory(self):
         while True:
             try:
@@ -35,15 +36,18 @@ class UVSim:
             except ValueError:
                 print("Invalid input. Try again.")
 
+    # Taylie's code
     def write_memory(self):
         print(self.memory[self.operand])
 
+    # Taylie's code
     def store_memory(self):
         self.memory[self.operand] = self.accumulator
 
     def load_memory(self):
         self.accumulator = self.memory[self.operand]
         
+    # Team collaboration
     def execute_program(self):
         while True:
             self.instruction_register = self.memory[self.instruction_counter]
@@ -109,5 +113,4 @@ def main():
     pass
 
 if __name__ == "__main__":
-
     main()
