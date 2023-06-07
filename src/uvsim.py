@@ -12,6 +12,7 @@ class UVSim:
         self.operation_code = 0
         self.operand = 0
 
+
     # Team collaboration
     def load_program(self):
         while True:
@@ -23,6 +24,7 @@ class UVSim:
                 break
             except FileNotFoundError:
                 print("File not found. Try again.")
+
 
     # Taylie's code
     def read_memory(self):
@@ -36,17 +38,51 @@ class UVSim:
             except ValueError:
                 print("Invalid input. Try again.")
 
+
     # Taylie's code
     def write_memory(self):
         print(self.memory[self.operand])
+
 
     # Taylie's code
     def store_memory(self):
         self.memory[self.operand] = self.accumulator
 
+
+    # Taylie's code
     def load_memory(self):
         self.accumulator = self.memory[self.operand]
-        
+
+
+    # Robby's code
+    def branch(self: object) -> None:
+        """DOCUMENT."""
+        match (-2 < self.operand and self.operand < len(self.memory)):
+            case True: self.instruction_counter = self.operand - 1
+            case False: 
+                raise IndexError(f"Memory index '{self.operand}' not in range.")
+
+
+    # Robby's code
+    def branch_negative(self: object) -> None:
+        """DOCUMENT."""
+        if self.accumulator < 0:
+            match (-2 < self.operand and self.operand < len(self.memory)):
+                case True: self.instruction_counter = self.operand - 1
+                case False: 
+                    raise IndexError(f"Memory index '{self.operand}' not in range.")
+
+
+    # Robby's code
+    def branch_zero(self: object) -> None:
+        """DOCUMENT."""
+        if self.accumulator == 0:
+            match (-2 < self.operand and self.operand < len(self.memory)):
+                case True: self.instruction_counter = self.operand - 1
+                case False: 
+                    raise IndexError(f"Memory index '{self.operand}' not in range.")
+
+
     # Team collaboration
     def execute_program(self):
         while True:
@@ -76,19 +112,17 @@ class UVSim:
                     # self.multiplication()
                     self.accumulator *= self.memory[self.operand]
                 case 40: # BRANCH
-                    # self.branch()
-                    self.instruction_counter = self.operand
+                    self.branch()
+                    # self.instruction_counter = self.operand
                     continue
                 case 41: # BRANCHNEG
-                    if self.accumulator < 0:
-                        # self.branch_negative()
-                        self.instruction_counter = self.operand
-                        continue
+                    self.branch_negative()
+                    # self.instruction_counter = self.operand
+                    continue
                 case 42: # BRANCHZERO
-                    if self.accumulator == 0:
-                        # self.branch_zero()
-                        self.instruction_counter = self.operand
-                        continue
+                    self.branch_zero()
+                    # self.instruction_counter = self.operand
+                    continue
                 case 43: # HALT
                     #!!!!CJ call halt here or is robby wanting just this?
                     print("Program execution completed.") 
