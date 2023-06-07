@@ -166,10 +166,7 @@ class UVSim:
                         self.branch_zero()
                         continue
                 case 43:
-                    #!!!!CJ call halt here or is robby wanting just this?
-                    print("Program execution completed.") #robby wrote
-                    # break inside of halt wouldn't work unless inside of loop.
-                    break
+                    self.halt()
                 case _:
                     print(
                         f"Invalid operation code '{self.operation_code}'. \n"
