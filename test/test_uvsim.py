@@ -49,6 +49,40 @@ class TestReadWriteStoreMemory(unittest.TestCase):
         with self.assertRaises(IndexError):
             self.uvsim.store_memory()
 
+    def test_addition_success(self):
+        self.uvsim.accumulator = 1000
+        self.uvsim.memory[self.uvsim.operand] = 500
+        self.uvsim.addition()
+        self.assertEqual(self.uvsim.accumulator, 1500)
+
+    def test_addition_negative(self):
+        self.uvsim.accumulator = -500
+        self.uvsim.memory[self.uvsim.operand] = -300
+        self.uvsim.addition()
+        self.assertEqual(self.uvsim.accumulator, -800)
+
+    def test_subtraction_success(self):
+        self.uvsim.accumulator = 1000
+        self.uvsim.memory[self.uvsim.operand] = 500
+        self.uvsim.subtraction()
+        self.assertEqual(self.uvsim.accumulator, 500)
+    
+    def test_subtraction_negative(self):
+        self.uvsim.accumulator = -500
+        self.uvsim.memory[self.uvsim.operand] = -300
+        self.uvsim.subtraction()
+        self.assertEqual(self.uvsim.accumulator, -200)
+
+    def test_load_memory_success(self):
+        self.uvsim.memory[self.uvsim.operand] = 500
+        self.uvsim.load_memory()
+        self.assertEqual(self.uvsim.accumulator, 500)
+
+    def test_load_memory_negative(self):
+        self.uvsim.memory[self.uvsim.operand] = -1000
+        self.uvsim.load_memory()
+        self.assertEqual(self.uvsim.accumulator, -1000)
+
 
 class TestBranchZeroNegative(unittest.TestCase):
     def setUp(self):
@@ -168,5 +202,105 @@ class TestBranchZeroNegative(unittest.TestCase):
             self.assertRaises(IndexError, self.uvsim.branch)
 
 
+class TestMulDivHaltUnitTests(unittest.TestCase):
+    def setUp(self):
+        self.S = UVSim()
+        self.S.operand = 0
+        self.S.memory = [0]*100
+        self.S.accumulator
+
+    def test_multiply_success(self):
+        # 5 * 5 = 25
+        self.S.accumulator = 5
+        self.S.memory[10] = 5
+        self.S.operand = 10
+        self.S.multiplication()
+        self.assertEqual(self.S.accumulator, 25)
+
+    def test_multiply_overflow(self): 
+        # 9876 * 5432 = 53655552 (truncated to 6432)
+        self.S.accumulator = 9876
+        self.S.memory[30] = 5432
+        self.S.operand = 30
+        self.S.multiplication()
+        print(f'Accumulator multiply: {self.S.accumulator}')
+        self.assertEqual(self.S.accumulator, 6432)
+        
+    def test_multiply_fail(self): 
+        # Invalid operand
+        self.S.accumulator = 5
+        self.S.memory[10] = "invalid"
+        self.S.operand = 10
+        try:
+            self.S.multiplication()
+            # should not be reached if given value error
+            self.assertEqual(False, "Expected ValueError")
+        except ValueError as error:
+            # should come here
+            self.assertEqual(str(error), "Invalid operand: must be a number")
+
+    def test_divide_sucess(self): 
+        #25 / 5 = 5
+        self.S.accumulator = 25
+        self.S.memory[10] = 5
+        self.S.operand = 10
+        self.S.division()
+        self.assertEqual(self.S.accumulator, 5)
+
+
+    def test_divide_zero(self): 
+        # 15 / 0 (division by zero)
+        self.S.accumulator = 15
+        self.S.memory[30] = 0
+        self.S.operand = 30
+        try:
+            self.S.division()
+            # should not be reached if given value error
+            self.assertEqual(False, True, "Expected ValueError for division by zero")
+        except ValueError as error:
+            # should come here
+            self.assertEqual(str(error), "Invalid operand: Cannot divide by 0")
+        
+    def test_divide_float(self): 
+        # 10.5 / 2.5 = 4.2 
+        self.S.accumulator = 10.5
+        self.S.memory[50] = 2.5
+        self.S.operand = 50
+        self.S.division()
+        self.assertEqual(self.S.accumulator, 4.0)
+
+        # 10.5 / 2.5 = 4.5 
+        self.S.accumulator = 10.9
+        self.S.memory[50] = 2.4
+        self.S.operand = 50
+        self.S.division()
+        self.assertEqual(self.S.accumulator, 4.0)
+
+        # 10.5 / 2.5 = 4.7 
+        self.S.accumulator = 23.5
+        self.S.memory[50] = 5
+        self.S.operand = 50
+        self.S.division()
+        self.assertEqual(self.S.accumulator, 4.0)
+        
+    def test_divide_fail(self): 
+        # invalid operand
+        self.S.accumulator = 10
+        self.S.memory[40] = "invalid"
+        self.S.operand = 40
+        try:
+            self.S.division()
+            # should not be reached if given value error
+            self.assertEqual(False, "Expected ValueError for invalid operand")
+        except ValueError as error:
+            # should come here
+            self.assertEqual(str(error), "Invalid operand: must be a number")
+        
+    def test_halt_sucess(self): 
+        with patch.object(sys, "exit") as mock_exit:
+            self.S.halt()
+            mock_exit.assert_called_once_with("Program Halted")
+            
+            
 if __name__ == '__main__':
     unittest.main()
