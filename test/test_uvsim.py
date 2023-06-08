@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch
 from src.uvsim import UVSim
-import sys
+
 
 class TestReadWriteStoreMemory(unittest.TestCase):
     def setUp(self):
@@ -48,6 +48,40 @@ class TestReadWriteStoreMemory(unittest.TestCase):
         self.uvsim.operand = 100
         with self.assertRaises(IndexError):
             self.uvsim.store_memory()
+
+    def test_addition_success(self):
+        self.uvsim.accumulator = 1000
+        self.uvsim.memory[self.uvsim.operand] = 500
+        self.uvsim.addition()
+        self.assertEqual(self.uvsim.accumulator, 1500)
+
+    def test_addition_negative(self):
+        self.uvsim.accumulator = -500
+        self.uvsim.memory[self.uvsim.operand] = -300
+        self.uvsim.addition()
+        self.assertEqual(self.uvsim.accumulator, -800)
+
+    def test_subtraction_success(self):
+        self.uvsim.accumulator = 1000
+        self.uvsim.memory[self.uvsim.operand] = 500
+        self.uvsim.subtraction()
+        self.assertEqual(self.uvsim.accumulator, 500)
+    
+    def test_subtraction_negative(self):
+        self.uvsim.accumulator = -500
+        self.uvsim.memory[self.uvsim.operand] = -300
+        self.uvsim.subtraction()
+        self.assertEqual(self.uvsim.accumulator, -200)
+
+    def test_load_memory_success(self):
+        self.uvsim.memory[self.uvsim.operand] = 500
+        self.uvsim.load_memory()
+        self.assertEqual(self.uvsim.accumulator, 500)
+
+    def test_load_memory_negative(self):
+        self.uvsim.memory[self.uvsim.operand] = -1000
+        self.uvsim.load_memory()
+        self.assertEqual(self.uvsim.accumulator, -1000)
 
 
 class TestBranchZeroNegative(unittest.TestCase):
@@ -175,8 +209,6 @@ class TestMulDivHaltUnitTests(unittest.TestCase):
         self.S.memory = [0]*100
         self.S.accumulator
 
-    """Multiply Tests"""
-    #test correct answer in accumulator
     def test_multiply_success(self):
         # 5 * 5 = 25
         self.S.accumulator = 5
@@ -185,7 +217,6 @@ class TestMulDivHaltUnitTests(unittest.TestCase):
         self.S.multiplication()
         self.assertEqual(self.S.accumulator, 25)
 
-        #test when given over 4 it cuts off
     def test_multiply_overflow(self): 
         # 9876 * 5432 = 53655552 (truncated to 6432)
         self.S.accumulator = 9876
@@ -194,8 +225,6 @@ class TestMulDivHaltUnitTests(unittest.TestCase):
         self.S.multiplication()
         print(f'Accumulator multiply: {self.S.accumulator}')
         self.assertEqual(self.S.accumulator, 6432)
-
-        #test error when given invalid input
         
     def test_multiply_fail(self): 
         # Invalid operand
@@ -210,9 +239,6 @@ class TestMulDivHaltUnitTests(unittest.TestCase):
             # should come here
             self.assertEqual(str(error), "Invalid operand: must be a number")
 
-
-        """Divide tests"""
-        #test divide sucess in accumulator
     def test_divide_sucess(self): 
         #25 / 5 = 5
         self.S.accumulator = 25
@@ -222,7 +248,6 @@ class TestMulDivHaltUnitTests(unittest.TestCase):
         self.assertEqual(self.S.accumulator, 5)
 
 
-        #test divide by 0
     def test_divide_zero(self): 
         # 15 / 0 (division by zero)
         self.S.accumulator = 15
@@ -235,10 +260,7 @@ class TestMulDivHaltUnitTests(unittest.TestCase):
         except ValueError as error:
             # should come here
             self.assertEqual(str(error), "Invalid operand: Cannot divide by 0")
-
-
-        #test divide by float
-        #want to be rounded/whole number
+        
     def test_divide_float(self): 
         # 10.5 / 2.5 = 4.2 
         self.S.accumulator = 10.5
@@ -260,8 +282,7 @@ class TestMulDivHaltUnitTests(unittest.TestCase):
         self.S.operand = 50
         self.S.division()
         self.assertEqual(self.S.accumulator, 4.0)
-
-        #test error when given invalid input
+        
     def test_divide_fail(self): 
         # invalid operand
         self.S.accumulator = 10
@@ -274,17 +295,12 @@ class TestMulDivHaltUnitTests(unittest.TestCase):
         except ValueError as error:
             # should come here
             self.assertEqual(str(error), "Invalid operand: must be a number")
-
-
-        """Halt Tests"""
-        #test halt
+        
     def test_halt_sucess(self): 
-        # check program was halted
         with patch.object(sys, "exit") as mock_exit:
             self.S.halt()
             mock_exit.assert_called_once_with("Program Halted")
-
-
-
+            
+            
 if __name__ == '__main__':
     unittest.main()

@@ -58,6 +58,15 @@ class UVSim:
         self.accumulator = self.memory[self.operand]
 
 
+    #Aubrey's code
+    def addition(self):
+        self.accumulator += self.memory[self.operand]
+
+    #Aubrey's code
+    def subtraction(self):
+        self.accumulator -= self.memory[self.operand]
+
+        
     # Cassidy's code
     def multiplication(self: object) -> None:
         """DOCUMENT."""
@@ -142,17 +151,17 @@ class UVSim:
                 case 21: # STORE
                     self.store_memory()
                 case 30: # ADD
-                    # self.addition()
-                    self.accumulator += self.memory[self.operand]
+                    self.addition()
+                    # self.accumulator += self.memory[self.operand]
                 case 31: # SUBTRACT
-                    # self.subtraction()
-                    self.accumulator -= self.memory[self.operand]
+                    self.subtraction()
+                    # self.accumulator -= self.memory[self.operand]
                 case 32: # DIVIDE
-                    # self.division()
-                    self.accumulator //= self.memory[self.operand]
+                    self.division()
+                    # self.accumulator //= self.memory[self.operand]
                 case 33: # MULTIPLY
-                    # self.multiplication()
-                    self.accumulator *= self.memory[self.operand]
+                    self.multiplication()
+                    # self.accumulator *= self.memory[self.operand]
                 case 40: # BRANCH
                     self.branch()
                     # self.instruction_counter = self.operand
