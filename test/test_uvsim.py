@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch
 from src.uvsim import UVSim
-
+import sys
 
 class TestReadWriteStoreMemory(unittest.TestCase):
     def setUp(self):
