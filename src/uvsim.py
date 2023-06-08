@@ -2,6 +2,10 @@
 
 DOCUMENT
 """
+
+import sys
+
+
 # Team collaboration
 class UVSim:
     def __init__(self):
@@ -52,6 +56,44 @@ class UVSim:
     # Taylie's code
     def load_memory(self):
         self.accumulator = self.memory[self.operand]
+
+
+    # Cassidy's code
+    def multiplication(self: object) -> None:
+        """DOCUMENT."""
+        # Check operand is a number
+        if not isinstance(self.memory[self.operand], (int, float)):
+            raise ValueError("Invalid operand: must be a number")
+
+        #Calculate
+        result = self.accumulator * self.memory[self.operand]
+        #Truncate and store
+        self.accumulator = result % 10000
+        #self.accumulator *= self.memory[self.operand]
+
+
+    # Cassidy's code
+    def division(self: object) -> None:
+        """DOCUMENT."""
+        # Check operand is a number
+        if not isinstance(self.memory[self.operand], (int, float)):
+            raise ValueError("Invalid operand: must be a number")
+        # Check operand is not 0
+        if self.memory[self.operand] == 00:
+            raise ValueError("Invalid operand: Cannot divide by 0")
+        else:
+            #self.accumulator //= self.memory[self.operand]
+            #Calculate
+            result = self.accumulator // self.memory[self.operand]
+            #Truncate and store
+            self.accumulator = result % 10000
+
+
+    # Cassidy's code
+    def halt(self: object) -> None:
+        """DOCUMENT."""
+        self.instruction_counter = self.operand
+        sys.exit("Program Halted")
 
 
     # Robby's code
@@ -124,9 +166,7 @@ class UVSim:
                     # self.instruction_counter = self.operand
                     continue
                 case 43: # HALT
-                    #!!!!CJ call halt here or is robby wanting just this?
-                    print("Program execution completed.") 
-                    # break inside of halt wouldn't work unless inside of loop.
+                    self.halt()
                     break
                 case _:
                     print(
