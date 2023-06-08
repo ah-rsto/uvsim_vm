@@ -2,6 +2,10 @@
 
 DOCUMENT
 """
+
+import sys
+
+
 # Team collaboration
 class UVSim:
     def __init__(self):
@@ -53,6 +57,7 @@ class UVSim:
     def load_memory(self):
         self.accumulator = self.memory[self.operand]
 
+
     #Aubrey's code
     def addition(self):
         self.accumulator += self.memory[self.operand]
@@ -60,6 +65,45 @@ class UVSim:
     #Aubrey's code
     def subtraction(self):
         self.accumulator -= self.memory[self.operand]
+
+        
+    # Cassidy's code
+    def multiplication(self: object) -> None:
+        """DOCUMENT."""
+        # Check operand is a number
+        if not isinstance(self.memory[self.operand], (int, float)):
+            raise ValueError("Invalid operand: must be a number")
+
+        #Calculate
+        result = self.accumulator * self.memory[self.operand]
+        #Truncate and store
+        self.accumulator = result % 10000
+        #self.accumulator *= self.memory[self.operand]
+
+
+    # Cassidy's code
+    def division(self: object) -> None:
+        """DOCUMENT."""
+        # Check operand is a number
+        if not isinstance(self.memory[self.operand], (int, float)):
+            raise ValueError("Invalid operand: must be a number")
+        # Check operand is not 0
+        if self.memory[self.operand] == 00:
+            raise ValueError("Invalid operand: Cannot divide by 0")
+        else:
+            #self.accumulator //= self.memory[self.operand]
+            #Calculate
+            result = self.accumulator // self.memory[self.operand]
+            #Truncate and store
+            self.accumulator = result % 10000
+
+
+    # Cassidy's code
+    def halt(self: object) -> None:
+        """DOCUMENT."""
+        self.instruction_counter = self.operand
+        sys.exit("Program Halted")
+
 
     # Robby's code
     def branch(self: object) -> None:
@@ -107,17 +151,17 @@ class UVSim:
                 case 21: # STORE
                     self.store_memory()
                 case 30: # ADD
-                    # self.addition()
                     self.addition()
+                    # self.accumulator += self.memory[self.operand]
                 case 31: # SUBTRACT
-                    # self.subtraction()
                     self.subtraction()
+                    # self.accumulator -= self.memory[self.operand]
                 case 32: # DIVIDE
-                    # self.division()
-                    self.accumulator //= self.memory[self.operand]
+                    self.division()
+                    # self.accumulator //= self.memory[self.operand]
                 case 33: # MULTIPLY
-                    # self.multiplication()
-                    self.accumulator *= self.memory[self.operand]
+                    self.multiplication()
+                    # self.accumulator *= self.memory[self.operand]
                 case 40: # BRANCH
                     self.branch()
                     # self.instruction_counter = self.operand
@@ -131,9 +175,7 @@ class UVSim:
                     # self.instruction_counter = self.operand
                     continue
                 case 43: # HALT
-                    #!!!!CJ call halt here or is robby wanting just this?
-                    print("Program execution completed.") 
-                    # break inside of halt wouldn't work unless inside of loop.
+                    self.halt()
                     break
                 case _:
                     print(
