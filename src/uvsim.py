@@ -2,7 +2,10 @@
 
 DOCUMENT
 """
+
 import sys
+
+
 # Team collaboration
 class UVSim:
     def __init__(self):
@@ -85,11 +88,13 @@ class UVSim:
             #Truncate and store
             self.accumulator = result % 10000
 
+
     # Cassidy's code
     def halt(self: object) -> None:
         """DOCUMENT."""
         self.instruction_counter = self.operand
         sys.exit("Program Halted")
+
 
     # Robby's code
     def branch(self: object) -> None:

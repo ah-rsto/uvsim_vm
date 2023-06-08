@@ -168,9 +168,7 @@ class TestBranchZeroNegative(unittest.TestCase):
             self.assertRaises(IndexError, self.uvsim.branch)
 
 
-
 class TestMulDivHaltUnitTests(unittest.TestCase):
-
     def setUp(self):
         self.S = UVSim()
         self.S.operand = 0
@@ -180,7 +178,6 @@ class TestMulDivHaltUnitTests(unittest.TestCase):
     """Multiply Tests"""
     #test correct answer in accumulator
     def test_multiply_success(self):
-
         # 5 * 5 = 25
         self.S.accumulator = 5
         self.S.memory[10] = 5
@@ -190,7 +187,6 @@ class TestMulDivHaltUnitTests(unittest.TestCase):
 
         #test when given over 4 it cuts off
     def test_multiply_overflow(self): 
-
         # 9876 * 5432 = 53655552 (truncated to 6432)
         self.S.accumulator = 9876
         self.S.memory[30] = 5432
@@ -200,8 +196,8 @@ class TestMulDivHaltUnitTests(unittest.TestCase):
         self.assertEqual(self.S.accumulator, 6432)
 
         #test error when given invalid input
+        
     def test_multiply_fail(self): 
-
         # Invalid operand
         self.S.accumulator = 5
         self.S.memory[10] = "invalid"
@@ -218,7 +214,6 @@ class TestMulDivHaltUnitTests(unittest.TestCase):
         """Divide tests"""
         #test divide sucess in accumulator
     def test_divide_sucess(self): 
-
         #25 / 5 = 5
         self.S.accumulator = 25
         self.S.memory[10] = 5
@@ -245,7 +240,6 @@ class TestMulDivHaltUnitTests(unittest.TestCase):
         #test divide by float
         #want to be rounded/whole number
     def test_divide_float(self): 
-
         # 10.5 / 2.5 = 4.2 
         self.S.accumulator = 10.5
         self.S.memory[50] = 2.5
@@ -269,7 +263,6 @@ class TestMulDivHaltUnitTests(unittest.TestCase):
 
         #test error when given invalid input
     def test_divide_fail(self): 
-
         # invalid operand
         self.S.accumulator = 10
         self.S.memory[40] = "invalid"
@@ -286,8 +279,6 @@ class TestMulDivHaltUnitTests(unittest.TestCase):
         """Halt Tests"""
         #test halt
     def test_halt_sucess(self): 
-
-
         # check program was halted
         with patch.object(sys, "exit") as mock_exit:
             self.S.halt()
