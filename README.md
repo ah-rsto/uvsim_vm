@@ -14,10 +14,11 @@ Usage:
 ------
 1. Open your command-line interface (CLI).
 
-2. Navigate to the directory where the UVSim program is located.
+2. Navigate to the directory where the uvsim program is located.
 
-3. Type the following command to start the UVSim program:
+3. Type the following command to start the uvsim program:
     python uvsim.py - it is case sensitive.
+    if python uvsim.py doesn't work, try python3 uvsim.py. If you are running the program from and IDE like VSCode, you can also press Run to run the program (The play button)
 
 4. After launching the program, you will be asked to enter the name of a BasicML program file:
     "Enter the name of the BasicML program file: " (example: 'program.txt' or 'Test1.txt') and press Enter - make sure that the BasicML program file is in the same directory as uvsim.py and you include .txt at the end. If not, make sure you know the location of the file and enter it correctly (example: '../Test2.txt')
@@ -29,7 +30,9 @@ Usage:
 6. The program will continue executing the BasicML instructions until it encounters a HALT instruction or until it runs out of instructions.
 
 7. When the program execution is completed, the following message will be printed:
-    "Program execution completed."
+    "Program Halted"
 
 8. The program will then end.
+
+- If you want to restart the program, follow steps 1-8 again.
 
