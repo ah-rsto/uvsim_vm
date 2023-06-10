@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import patch
-from src.uvsim import UVSim
+from uvsim import UVSim
+import sys
 
 
 class TestReadWriteStoreMemory(unittest.TestCase):
@@ -48,6 +49,13 @@ class TestReadWriteStoreMemory(unittest.TestCase):
         self.uvsim.operand = 100
         with self.assertRaises(IndexError):
             self.uvsim.store_memory()
+
+
+class TestAddSubLoad(unittest.TestCase):
+    def setUp(self):
+        self.uvsim = UVSim()
+        self.uvsim.operand = 0
+        self.uvsim.memory = [0]*100
 
     def test_addition_success(self):
         self.uvsim.accumulator = 1000
