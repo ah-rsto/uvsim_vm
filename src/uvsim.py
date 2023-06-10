@@ -152,28 +152,18 @@ class UVSim:
                     self.store_memory()
                 case 30: # ADD
                     self.addition()
-                    # self.accumulator += self.memory[self.operand]
                 case 31: # SUBTRACT
                     self.subtraction()
-                    # self.accumulator -= self.memory[self.operand]
                 case 32: # DIVIDE
                     self.division()
-                    # self.accumulator //= self.memory[self.operand]
                 case 33: # MULTIPLY
                     self.multiplication()
-                    # self.accumulator *= self.memory[self.operand]
                 case 40: # BRANCH
                     self.branch()
-                    # self.instruction_counter = self.operand
-                    continue
                 case 41: # BRANCHNEG
                     self.branch_negative()
-                    # self.instruction_counter = self.operand
-                    continue
                 case 42: # BRANCHZERO
                     self.branch_zero()
-                    # self.instruction_counter = self.operand
-                    continue
                 case 43: # HALT
                     self.halt()
                     break
