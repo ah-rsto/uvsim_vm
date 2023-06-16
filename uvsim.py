@@ -14,19 +14,25 @@ class Memory:
                 print("File not found. Try again.")
         
     def read_memory(self, operand, read_callback):
+        # If a read_callback is provided, then the GUI is being used to get the value
         if read_callback:
             value = read_callback()
-            if value < -9999 or value > 9999:
-                raise ValueError("Invalid input. Try again.")
-            self.memory[operand] = value
+        # If no read_callback is provided, then the console is being used to get the value
         else:
-            print('No read callback set')
+            print('No read callback set, printing to console')
+            value = int(input("Enter a number from -9999 to 9999: "))
+        # Check that the value is in range
+        if value < -9999 or value > 9999:
+                raise ValueError("Invalid input. Try again.")
+        # Store the value in memory
+        self.memory[operand] = value
+            
 
     def write_memory(self, operand, write_callback):
         if write_callback:
             write_callback(self.memory[operand])
         else:
-            print(f'No write callback set - print to console: {self.memory[operand]}')
+            print(f'No write callback set - printing to console: {self.memory[operand]}')
 
     def store_memory(self, operand, accumulator):
         self.memory[operand] = accumulator
@@ -67,7 +73,7 @@ class ArithmeticUnit:
 
 class BranchUnit:
     def branch(self, operand, instruction_counter):
-        if -2 < operand and operand < len(self.memory):
+        if -2 < operand and operand < 100:
             instruction_counter = operand - 1
         else:
             raise IndexError(f"Memory index '{operand}' not in range.")
@@ -75,7 +81,7 @@ class BranchUnit:
 
     def branch_negative(self, operand, instruction_counter, accumulator):
         if accumulator < 0:
-            if -2 < operand and operand < len(self.memory):
+            if -2 < operand and operand < 100:
                 instruction_counter = operand - 1
             else:
                 raise IndexError(f"Memory index '{operand}' not in range.")
@@ -83,7 +89,7 @@ class BranchUnit:
 
     def branch_zero(self, operand, instruction_counter, accumulator):
         if accumulator == 0:
-            if -2 < operand and operand < len(self.memory):
+            if -2 < operand and operand < 100:
                 instruction_counter = operand - 1
             else:
                 raise IndexError(f"Memory index '{operand}' not in range.")
@@ -93,6 +99,9 @@ class BranchUnit:
         instruction_counter = operand
         if halted:
             halted()
+            return instruction_counter
+        else:
+            print('Program Completed')
             return instruction_counter
 
 
@@ -160,7 +169,7 @@ class UVSim:
 # def main():
 #     """Main script driver."""
 #     uv_sim = UVSim()
-#     uv_sim.load_program()
+#     uv_sim.load_program('Test1.txt')
 #     uv_sim.execute_program()
 
 #     pass

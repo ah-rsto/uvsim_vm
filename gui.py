@@ -63,7 +63,7 @@ class UVSimGUI:
         self.uvsim.execute_program()
 
     def halted(self):
-        self.write_to_console("Program halted.")
+        self.write_to_console("Program completed.\nTo run another file, click 'Upload BasicML file'")
 
 
 
