@@ -106,26 +106,33 @@ class UVSimGUI(customtkinter.CTk):
         self.console_output.see(tk.END)
 
     def update_program(self):
+        self.program_text.delete("1.0", tk.END)
         program_text = "Memory Registers:\n"
         program_text += self.uvsim.get_program_text()
 
         self.program_text.insert(tk.INSERT, program_text)
 
-    def open_program(self):
-        self.program_text.delete("1.0", tk.END)
-        self.filename = filedialog.askopenfilename(
-            initialdir="/",
-            title="Select file",
-            filetypes=(("txt files", "*.txt"), ("all files", "*.*")),
-        )
-        if self.filename == "":
-            self.program_text.insert(tk.INSERT, "No file selected. Try again.")
+    def open_program(self, filename=""):
+        self.filename = filename
+        while self.filename == "":
+            self.program_text.delete("1.0", tk.END)
+            self.filename = filedialog.askopenfilename(
+                initialdir="/",
+                title="Select file",
+                filetypes=(("txt files", "*.txt"), ("all files", "*.*")),
+            )
+            if self.filename == "":
+                self.program_text.insert(tk.INSERT, "No file selected. Try again.")
         self.uvsim.load_program(self.filename)
         self.update_program()
         self.reset_textboxes()
         # self.execute_program()
 
     def execute_program(self):
+        self.uvsim.reset_accumulator()
+        self.uvsim.reset_cursor()
+        self.uvsim.reset_instruction()
+        self.open_program(filename=self.filename)
         self.reset_textboxes()
         self.uvsim.execute_program(self.read_from_user, self.write_to_console)
 
