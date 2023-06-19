@@ -1,46 +1,69 @@
 import tkinter as tk
 from uvsim import UVSim
-from tkinter import filedialog, scrolledtext, simpledialog
+from tkinter import filedialog
 import customtkinter
-#user interface testing will be embeded in application
 
-class UVSimGUI:
-    def __init__(self, root):
-        self.uvsim = UVSim(self.read_from_user, self.write_to_console, self.halted)
-        self.root = root
+customtkinter.set_appearance_mode("dark")
+customtkinter.set_default_color_theme("blue")
 
-        customtkinter.set_appearance_mode("dark")
-        customtkinter.set_default_color_theme("blue")
+class UVSimGUI(customtkinter.CTk):
+    def __init__(self):
+        super().__init__()
+        self.uvsim = UVSim(self.read_from_user, self.write_to_console, self.halted, self.displayValues)
 
-        root.title("GUI program")
-        root.geometry("600x600")
+        self.title("UVSim GUI")
+        self.geometry("780x620")
 
-        self.title = customtkinter.CTkLabel(root, text="UVSim GUI", font=("Arial", 30))
-        self.title.pack()
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure((2, 3), weight=0)
+        self.grid_rowconfigure((0, 1, 2), weight=1)
 
-        # self.program_text = scrolledtext.ScrolledText(root, width=50, height=10)
-        # self.program_text.pack()
-        self.program_text = customtkinter.CTkTextbox(root, width=350, height=150)
-        self.program_text.pack(pady=10)
+        self.sidebar_frame = customtkinter.CTkFrame(self, width=250, corner_radius=0)
+        self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
+        self.sidebar_frame.grid_rowconfigure(4, weight=1)
+        self.header = customtkinter.CTkLabel(self.sidebar_frame, text="UVSim GUI", font=customtkinter.CTkFont(size=20, weight="bold"))
+        self.header.grid(row=0, column=0, padx=20, pady=(20, 10))
+
+        self.accumulator_label = customtkinter.CTkTextbox(self.sidebar_frame, width=200, height=100, font=customtkinter.CTkFont(size=12, weight="normal"))
+        self.accumulator_label.grid(row=1, column=0, padx=20, pady=10)
+        self.accumulator_label.insert(tk.INSERT, "Accumulator:\n")
+
+        self.counter = customtkinter.CTkTextbox(self.sidebar_frame, width=200, height=100, font=customtkinter.CTkFont(size=12, weight="normal"))
+        self.counter.grid(row=2, column=0, padx=20, pady=10)
+        self.counter.insert(tk.INSERT, "Counter:\n")
+
+        self.console_output = customtkinter.CTkTextbox(self.sidebar_frame, width=200, height=100, font=customtkinter.CTkFont(size=12, weight="normal"))
+        self.console_output.grid(row=3, column=0, padx=20, pady=10)
+        self.console_output.insert(tk.INSERT, "Console output:\n")
+
+
+        self.upload_btn = customtkinter.CTkButton(self.sidebar_frame, text="Upload BasicML file", command=self.open_program)
+        self.upload_btn.grid(row=5, column=0, padx=20, pady=10)
+
+        self.program_text = customtkinter.CTkTextbox(self, width=300)
+        self.program_text.grid(row=0, column=1, rowspan=2, padx=20, pady=(20, 0), sticky="nsew")
         self.program_text.insert(tk.INSERT, "BasicML program will be displayed here.")
 
-        # self.console_output = scrolledtext.ScrolledText(root, width=50, height=10)
-        self.console_output = customtkinter.CTkTextbox(root, width=350, height=150)
-        self.console_output.pack(pady=10)
-        self.console_output.insert(tk.INSERT, "Console output will be displayed here.\n")
 
-        upload_btn = customtkinter.CTkButton(root, text="Upload BasicML file", command=self.open_program)
-        upload_btn.pack()
+        self.execute_btn = customtkinter.CTkButton(self, text="Run File", command=self.execute_program)
+        self.execute_btn.grid(row=3, column=1, padx=20, pady=10, sticky="nsew")
+
+
+    def reset_textbox(self, textbox, text):
+        textbox.delete("1.0", tk.END)
+        textbox.insert(tk.INSERT, text)
 
     def read_from_user(self):
-        user_input = simpledialog.askstring("Input", "Enter a number from -9999 to 9999", parent=self.root)
+        dialog = customtkinter.CTkInputDialog(text="Enter a number from -9999 to 9999", title="READ Input")
+        user_input = dialog.get_input()
         try:
             value = int(user_input)
             if value < -9999 or value > 9999:
                 raise ValueError
             return value
         except ValueError:
-            user_input.set("Invalid input. Try again.")
+            self.write_to_console("Invalid input. Try again.")
+            return self.read_from_user()
 
     def write_to_console(self, value):
         self.console_output.insert(tk.END, str(value) + "\n")
@@ -48,22 +71,32 @@ class UVSimGUI:
     
     def open_program(self):
         self.program_text.delete("1.0", tk.END)
-        self.root.filename = filedialog.askopenfilename(initialdir="/", title="Select file", filetypes=(("txt files", "*.txt"), ("all files", "*.*")))
-        if self.root.filename == "":
-            return 'No file uploaded. Try again.'
-        with open(self.root.filename, 'r') as f:
-            program = f.read()
-        self.program_text.insert(tk.INSERT, program)
-        self.uvsim.load_program(self.root.filename)
-        self.execute_program()
+        self.filename = filedialog.askopenfilename(initialdir="/", title="Select file", filetypes=(("txt files", "*.txt"), ("all files", "*.*")))
+        if self.filename == "":
+            self.program_text.insert(tk.INSERT, "No file selected. Try again.")
+        self.uvsim.load_program(self.filename)
+        # with open(self.filename, 'r') as f:
+        #     program = f.read()
+        memory = self.uvsim.memory.memory
+        program_text = "Memory Registers:\n"
+        for i, val in enumerate(memory):
+            program_text += f"{i}: {val}\n"
+        self.program_text.insert(tk.INSERT, program_text)
+        self.reset_textbox(self.accumulator_label, "Accumulator:\n")
+        self.reset_textbox(self.counter, "Counter:\n")
+        self.reset_textbox(self.console_output, "Console output:\n")
+        # self.execute_program()
 
     def execute_program(self):
         self.uvsim.execute_program()
+    
+    def displayValues(self, accumulator, counter):
+        self.accumulator_label.insert(tk.END, str(accumulator))
+        self.counter.insert(tk.END, str(counter))
 
     def halted(self):
-        self.write_to_console("Program Completed.")
+        self.write_to_console("Program completed.\n\nTo run another file, click 'Upload BasicML file'")
 
 
-root = customtkinter.CTk()
-app = UVSimGUI(root)
-root.mainloop()
+app = UVSimGUI()
+app.mainloop()

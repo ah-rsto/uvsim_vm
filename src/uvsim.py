@@ -107,8 +107,7 @@ class BranchUnit:
 
 # Team collaboration
 class UVSim:
-    def __init__(self, read_callback=None, write_callback=None, halted=None):
-        # self.memory = [0]*100
+    def __init__(self, read_callback=None, write_callback=None, halted=None, displayValues=None):
         self.memory = Memory()
         self.arithmetic_unit = ArithmeticUnit()
         self.branch_unit = BranchUnit()
@@ -119,6 +118,7 @@ class UVSim:
         self.read_callback = read_callback
         self.write_callback = write_callback
         self.halted = halted
+        self.displayValues = displayValues
     
     def load_program(self, filename):
         self.memory.load_program(filename)
@@ -129,6 +129,9 @@ class UVSim:
             self.instruction_register = self.memory.memory[self.instruction_counter]
             self.operation_code = abs(self.instruction_register) // 100
             operand = abs(self.instruction_register) % 100
+
+            if self.displayValues:
+                self.displayValues(f'{self.accumulator}\n', f'{self.instruction_counter}\n')
 
             match self.operation_code:
                 case 10:  # w/ READ
