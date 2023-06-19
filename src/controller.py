@@ -14,7 +14,7 @@ class ArithmeticController:
 
         :param accumulator: Value in accumulator register
         :param instruction_set: Instruction set from memory
-        :param instruction_idx: None
+        :param instruction_idx: Instruction index in memory
         :return solution: Sum of accumulator and memory value
         """
         return accumulator + instruction_set[instruction_idx]
@@ -22,9 +22,9 @@ class ArithmeticController:
     def subtraction(self, accumulator, instruction_set, instruction_idx) -> int:
         """Subtration Method Docstring Text.
 
-        :param : None
-        :param : None
-        :param : None
+        :param accumulator: Value in accumulator register
+        :param instruction_set: Instruction set from memory
+        :param instruction_idx: Instruction index in memory
         :return solution: Difference of accumulator and memory value
         """
         return accumulator - instruction_set[instruction_idx]
@@ -32,9 +32,9 @@ class ArithmeticController:
     def multiplication(self, accumulator, instruction_set, instruction_idx) -> int:
         """Multiplication Method Docstring Text.
 
-        :param : None
-        :param : None
-        :param : None
+        :param accumulator: Value in accumulator register
+        :param instruction_set: Instruction set from memory
+        :param instruction_idx: Instruction index in memory
         :return solution: Product of accumulator and memory value
         """
         if not isinstance(instruction_set[instruction_idx], (int, float)):
@@ -45,9 +45,9 @@ class ArithmeticController:
     def division(self, accumulator, instruction_set, instruction_idx) -> int:
         """Division Method Docstring Text.
 
-        :param : None
-        :param : None
-        :param : None
+        :param accumulator: Value in accumulator register
+        :param instruction_set: Instruction set from memory
+        :param instruction_idx: Instruction index in memory
         :return solution: Quotient of accumulator dividend and memory value
         """
         if not isinstance(instruction_set[instruction_idx], (int, float)):
@@ -64,8 +64,8 @@ class BranchController:
     def branch(self, instruction_idx) -> int:
         """Branch Method Docstring Text.
 
-        :param : None
-        :return cursor: New cursor position
+        :param instruction_idx: Instruction index in memory
+        :return cursor: New position in instruction set runtime
         """
         if -2 < instruction_idx and instruction_idx < 100:
             cursor = instruction_idx - 1
@@ -76,10 +76,10 @@ class BranchController:
     def branch_zero(self, cursor, accumulator, instruction_idx) -> int:
         """Branch Zero Method Docstring Text.
 
-        :param : None
-        :param : None
-        :param : None
-        :return cursor: New cursor position
+        :param cursor: Current position in instruction set runtime
+        :param accumulator: Value in accumulator register
+        :param instruction_idx: Instruction index in memory
+        :return cursor: New position in instruction set runtime
         """
         if accumulator == 0:
             if -2 < instruction_idx and instruction_idx < 100:
@@ -91,10 +91,10 @@ class BranchController:
     def branch_negative(self, cursor, accumulator, instruction_idx) -> int:
         """Branch Negative Method Docstring Text.
 
-        :param : None
-        :param : None
-        :param : None
-        :return cursor: New cursor position
+        :param cursor: Current position in instruction set runtime
+        :param accumulator: Value in accumulator register
+        :param instruction_idx: Instruction index in memory
+        :return cursor: New position in instruction set runtime
         """
         if accumulator < 0:
             if -2 < instruction_idx and instruction_idx < 100:
@@ -106,9 +106,10 @@ class BranchController:
     def halt(self, halted, instruction_idx) -> int:
         """Halt Method Docstring Text.
 
-        :param : None
-        :param : None
-        :return cursor: Final cursor position
+        :param halted: None
+        :param instruction_idx: Instruction index in memory
+        :param instruction_idx: Instruction index in memory
+        :return cursor: FInal position in instruction set runtime
         """
         cursor = instruction_idx
         if halted:
