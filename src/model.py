@@ -11,6 +11,9 @@ class DataModel:
         self.accumulator = 0
         self.registers = [0] * 100
 
+    def reset_accumulator(self):
+        self.accumulator = 0
+
     def load_program(self, filename):
         """REPLACE
         Args:

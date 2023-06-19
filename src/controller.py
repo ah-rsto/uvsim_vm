@@ -86,6 +86,15 @@ class UVSimController(ArithmeticController, BranchController):
         self.instruction = 0
         self.halted = halted
 
+    def reset_accumulator(self):
+        self.data_model.reset_accumulator()
+
+    def reset_cursor(self):
+        self.cursor = 0
+
+    def reset_instruction(self):
+        self.instruction = 0
+
     def load_program(self, filename):
         print(filename)
         self.data_model.load_program(filename)
