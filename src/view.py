@@ -1,6 +1,6 @@
 """View
 
-This module manages the view model.
+This module manages the view components.
 """
 
 import tkinter as tk
