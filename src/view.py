@@ -84,7 +84,7 @@ class UVSimGUI(customtkinter.CTk):
     def reset_textboxes(self):
         self.reset_textbox(self.accumulator_label, "Accumulator:\n")
         self.reset_textbox(self.cursor, "Cursor:\n")
-        self.reset_textbox(self.console_output, "Console output:\n")
+        self.reset_textbox(self.console_output, "Console Output:\n")
 
     def read_from_user(self):
         dialog = customtkinter.CTkInputDialog(

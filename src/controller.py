@@ -7,65 +7,110 @@ from model import DataModel
 
 
 class ArithmeticController:
-    """Arithmetic Controller Class Docstring Text."""
+    """Manager for arithmetic operations."""
 
-    def addition(self, accumulator, registers, register_idx):
-        """Addition Method Docstring Text."""
-        return accumulator + registers[register_idx]
+    def addition(self, accumulator, instruction_set, instruction_idx) -> int:
+        """Addition Method Docstring Text.
 
-    def subtraction(self, accumulator, registers, register_idx):
-        """Subtration Method Docstring Text."""
-        return accumulator - registers[register_idx]
+        :param accumulator: Value in accumulator register
+        :param instruction_set: Instruction set from memory
+        :param instruction_idx: None
+        :return solution: Sum of accumulator and memory value
+        """
+        return accumulator + instruction_set[instruction_idx]
 
-    def multiplication(self, accumulator, registers, register_idx):
-        """Multiplication Method Docstring Text."""
-        if not isinstance(registers[register_idx], (int, float)):
-            raise ValueError("Invalid register_idx: must be a number")
-        result = accumulator * registers[register_idx]
+    def subtraction(self, accumulator, instruction_set, instruction_idx) -> int:
+        """Subtration Method Docstring Text.
+
+        :param : None
+        :param : None
+        :param : None
+        :return solution: Difference of accumulator and memory value
+        """
+        return accumulator - instruction_set[instruction_idx]
+
+    def multiplication(self, accumulator, instruction_set, instruction_idx) -> int:
+        """Multiplication Method Docstring Text.
+
+        :param : None
+        :param : None
+        :param : None
+        :return solution: Product of accumulator and memory value
+        """
+        if not isinstance(instruction_set[instruction_idx], (int, float)):
+            raise ValueError("Invalid instruction_idx: must be a number")
+        result = accumulator * instruction_set[instruction_idx]
         return result % 10000
 
-    def division(self, accumulator, registers, register_idx):
-        """Division Method Docstring Text."""
-        if not isinstance(registers[register_idx], (int, float)):
-            raise ValueError("Invalid register_idx: must be a number")
-        if registers[register_idx] == 00:
-            raise ValueError("Invalid register_idx: Cannot divide by 0")
+    def division(self, accumulator, instruction_set, instruction_idx) -> int:
+        """Division Method Docstring Text.
+
+        :param : None
+        :param : None
+        :param : None
+        :return solution: Quotient of accumulator dividend and memory value
+        """
+        if not isinstance(instruction_set[instruction_idx], (int, float)):
+            raise ValueError("Invalid instruction_idx: must be a number")
+        if instruction_set[instruction_idx] == 00:
+            raise ValueError("Invalid instruction_idx: Cannot divide by 0")
         else:
-            return (accumulator // registers[register_idx]) % 10000
+            return (accumulator // instruction_set[instruction_idx]) % 10000
 
 
 class BranchController:
-    """Branch Controller Class Docstring Text."""
+    """Manager for branch operations."""
 
-    def branch(self, register_idx):
-        """Branch Method Docstring Text."""
-        if -2 < register_idx and register_idx < 100:
-            cursor = register_idx - 1
+    def branch(self, instruction_idx) -> int:
+        """Branch Method Docstring Text.
+
+        :param : None
+        :return cursor: New cursor position
+        """
+        if -2 < instruction_idx and instruction_idx < 100:
+            cursor = instruction_idx - 1
         else:
-            raise IndexError(f"Memory index '{register_idx}' not in range.")
+            raise IndexError(f"Memory index '{instruction_idx}' not in range.")
         return cursor
 
-    def branch_zero(self, cursor, accumulator, register_idx):
-        """Branch Zero Method Docstring Text."""
+    def branch_zero(self, cursor, accumulator, instruction_idx) -> int:
+        """Branch Zero Method Docstring Text.
+
+        :param : None
+        :param : None
+        :param : None
+        :return cursor: New cursor position
+        """
         if accumulator == 0:
-            if -2 < register_idx and register_idx < 100:
-                cursor = register_idx - 1
+            if -2 < instruction_idx and instruction_idx < 100:
+                cursor = instruction_idx - 1
             else:
-                raise IndexError(f"Memory index '{register_idx}' not in range.")
+                raise IndexError(f"Memory index '{instruction_idx}' not in range.")
         return cursor
 
-    def branch_negative(self, cursor, accumulator, register_idx):
-        """Branch Negative Method Docstring Text."""
+    def branch_negative(self, cursor, accumulator, instruction_idx) -> int:
+        """Branch Negative Method Docstring Text.
+
+        :param : None
+        :param : None
+        :param : None
+        :return cursor: New cursor position
+        """
         if accumulator < 0:
-            if -2 < register_idx and register_idx < 100:
-                cursor = register_idx - 1
+            if -2 < instruction_idx and instruction_idx < 100:
+                cursor = instruction_idx - 1
             else:
-                raise IndexError(f"Memory index '{register_idx}' not in range.")
+                raise IndexError(f"Memory index '{instruction_idx}' not in range.")
         return cursor
 
-    def halt(self, halted, register_idx):
-        """Halt Method Docstring Text."""
-        cursor = register_idx
+    def halt(self, halted, instruction_idx) -> int:
+        """Halt Method Docstring Text.
+
+        :param : None
+        :param : None
+        :return cursor: Final cursor position
+        """
+        cursor = instruction_idx
         if halted:
             halted()
             return cursor
@@ -75,7 +120,7 @@ class BranchController:
 
 
 class UVSimController(ArithmeticController, BranchController):
-    """App Controller Class Docstring Text."""
+    """Manager for application runtime."""
 
     def __init__(self, halted, display_values=None):
         """"""
@@ -86,39 +131,74 @@ class UVSimController(ArithmeticController, BranchController):
         self.instruction = 0
         self.halted = halted
 
-    def reset_accumulator(self):
+    def reset_accumulator(self) -> None:
+        """REPLACE
+
+        :param: None
+        :return: None
+        """
         self.data_model.reset_accumulator()
 
-    def reset_cursor(self):
+    def reset_cursor(self) -> None:
+        """REPLACE
+
+        :param: None
+        :return: None
+        """
         self.cursor = 0
 
-    def reset_instruction(self):
+    def reset_instruction(self) -> None:
+        """REPLACE
+
+        :param: None
+        :return: None
+        """
         self.instruction = 0
 
-    def load_program(self, filename):
+    def load_program(self, filename) -> None:
+        """REPLACE
+
+        :param : None
+        :return: None
+        """
         print(filename)
         self.data_model.load_program(filename)
 
-    def get_program_text(self):
-        program_text = ""
-        registers = self.data_model.get_instructions()
+    def get_program_text(self) -> str:
+        """REPLACE
 
-        for i, val in enumerate(registers):
+        :param: None
+        :return program_text: Formatted instruction and index for ui
+        """
+        program_text = ""
+        instruction_set = self.data_model.get_instructions()
+
+        for i, val in enumerate(instruction_set):
             idx, val = str(i).rjust(2, "0"), (
                 val if "-" in str(val) else "+" + str(val)
             )
             program_text += f"{idx}:   {val}\n"
         return program_text
 
-    def get_acc_cur(self):
+    def get_acc_cur(self) -> tuple[str, str]:
+        """REPLACE
+
+        :param: None
+        :return program_text: Formatted accumulator and cursor for ui
+        """
         return f"{self.data_model.get_accumulator()}\n", f"{self.cursor}\n"
 
-    def execute_program(self, read_from_user, write_to_console):
-        """Execute Method Docstring Text."""
+    def execute_program(self, read_from_user, write_to_console) -> None:
+        """Executes main runtime loop and instruction validation.
+
+        :param : None
+        :param : None
+        :return: None
+        """
         while True:
             self.instruction = self.data_model.get_instruction(self.cursor)
             operation_code = abs(self.instruction) // 100
-            register_idx = abs(self.instruction) % 100
+            instruction_idx = abs(self.instruction) % 100
 
             if self.display_values:
                 self.display_values(
@@ -127,23 +207,23 @@ class UVSimController(ArithmeticController, BranchController):
 
             match operation_code:
                 case 10:
-                    self.data_model.set_register(register_idx, read_from_user())
+                    self.data_model.set_instruction(instruction_idx, read_from_user())
                 case 11:
-                    write_to_console(self.data_model.get_instruction(register_idx))
+                    write_to_console(self.data_model.get_instruction(instruction_idx))
                 case 20:
                     self.data_model.set_accumulator(
-                        self.data_model.get_instruction(register_idx)
+                        self.data_model.get_instruction(instruction_idx)
                     )
                 case 21:
-                    self.data_model.set_register(
-                        register_idx, self.data_model.get_accumulator()
+                    self.data_model.set_instruction(
+                        instruction_idx, self.data_model.get_accumulator()
                     )
                 case 30:
                     self.data_model.set_accumulator(
                         self.addition(
                             self.data_model.get_accumulator(),
                             self.data_model.get_instructions(),
-                            register_idx,
+                            instruction_idx,
                         )
                     )
                 case 31:
@@ -151,7 +231,7 @@ class UVSimController(ArithmeticController, BranchController):
                         self.subtraction(
                             self.data_model.get_accumulator(),
                             self.data_model.get_instructions(),
-                            register_idx,
+                            instruction_idx,
                         )
                     )
                 case 32:
@@ -159,7 +239,7 @@ class UVSimController(ArithmeticController, BranchController):
                         self.division(
                             self.data_model.get_accumulator(),
                             self.data_model.get_instructions(),
-                            register_idx,
+                            instruction_idx,
                         )
                     )
                 case 33:
@@ -167,21 +247,21 @@ class UVSimController(ArithmeticController, BranchController):
                         self.multiplication(
                             self.data_model.get_accumulator(),
                             self.data_model.get_instructions(),
-                            register_idx,
+                            instruction_idx,
                         )
                     )
                 case 40:
-                    self.cursor = self.branch(register_idx, self.cursor)
+                    self.cursor = self.branch(instruction_idx, self.cursor)
                 case 41:
                     self.cursor = self.branch_negative(
-                        self.cursor, self.data_model.get_accumulator(), register_idx
+                        self.cursor, self.data_model.get_accumulator(), instruction_idx
                     )
                 case 42:
                     self.cursor = self.branch_zero(
-                        self.cursor, self.data_model.get_accumulator(), register_idx
+                        self.cursor, self.data_model.get_accumulator(), instruction_idx
                     )
                 case 43:  # HALT
-                    self.cursor = self.halt(self.halted, register_idx)
+                    self.cursor = self.halt(self.halted, instruction_idx)
                     break
                 case _:
                     print(
