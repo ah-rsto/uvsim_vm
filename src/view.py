@@ -126,7 +126,6 @@ class UVSimGUI(customtkinter.CTk):
         # self.execute_program()
 
     def execute_program(self):
-        self.update_program()
         self.reset_textboxes()
         self.uvsim.execute_program(self.read_from_user, self.write_to_console)
 
