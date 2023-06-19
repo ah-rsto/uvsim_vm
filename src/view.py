@@ -50,7 +50,7 @@ class UVSimGUI(customtkinter.CTk):
             font=customtkinter.CTkFont(size=12, weight="normal"),
         )
         self.cursor.grid(row=2, column=0, padx=20, pady=10)
-        self.cursor.insert(tk.INSERT, "Counter:\n")
+        self.cursor.insert(tk.INSERT, "Cursor:\n")
 
         self.console_output = customtkinter.CTkTextbox(
             self.sidebar_frame,
@@ -83,7 +83,7 @@ class UVSimGUI(customtkinter.CTk):
 
     def reset_textboxes(self):
         self.reset_textbox(self.accumulator_label, "Accumulator:\n")
-        self.reset_textbox(self.cursor, "Counter:\n")
+        self.reset_textbox(self.cursor, "Cursor:\n")
         self.reset_textbox(self.console_output, "Console output:\n")
 
     def read_from_user(self):
@@ -136,7 +136,7 @@ class UVSimGUI(customtkinter.CTk):
         self.reset_textboxes()
         self.uvsim.execute_program(self.read_from_user, self.write_to_console)
 
-    def display_values(self, accumulator, counter):
+    def display_values(self, accumulator, cursor):
         accumulator, cursor = self.uvsim.get_acc_cur()
 
         self.accumulator_label.insert(tk.END, str(accumulator))
