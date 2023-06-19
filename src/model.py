@@ -9,25 +9,20 @@ class DataModel:
 
     def __init__(self):
         self.accumulator = 0
-        self.registers = [0] * 100
+        self.memory = [0] * 100
 
     def reset_accumulator(self):
+        """Resets accumulator registry."""
         self.accumulator = 0
 
-    def load_program(self, filename):
-        """REPLACE
-        Args:
-            REPLACE (TYPE): DESCRIPTION
-
-        Returns:
-            REPLACE (TYPE): DESCRIPTION
-        """
+    def load_program(self, filename: str) -> None:
+        """Loads program instructions from file."""
         while True:
             try:
                 # filename = input("Enter the name of the file to load: ")
                 with open(filename, "r") as f_in:
                     for idx, line in enumerate(f_in):
-                        self.registers[idx] = int(line.strip())
+                        self.memory[idx] = int(line.strip())
                 break
             except FileNotFoundError:
                 print("File not found. Try again.")
@@ -36,72 +31,30 @@ class DataModel:
             # except Exception:
             #     print("An exception occurred. Try again.")
 
-    def save_program(self, filename):
-        """Saves modified program to file. INCOMPLETE
-        Args:
-            filename (str): Path to file
-
-        Returns:
-            None
-        """
+    def save_program(self, filename: str) -> None:
+        """Saves modified program to file. INCOMPLETE"""
         pass
 
-    def get_accumulator(self):
-        """REPLACE
-        Args:
-            REPLACE (TYPE): DESCRIPTION
-
-        Returns:
-            REPLACE (TYPE): DESCRIPTION
-        """
+    def get_accumulator(self) -> int:
+        """Gets value in accumulator registry."""
         return self.accumulator
 
-    def get_register(self, idx):
-        """REPLACE
-        Args:
-            REPLACE (TYPE): DESCRIPTION
+    def get_instruction(self, idx: int) -> int:
+        """Gets instruction at specified memory index."""
+        return self.memory[idx]
 
-        Returns:
-            REPLACE (TYPE): DESCRIPTION
-        """
-        return self.registers[idx]
+    def get_instructions(self) -> list:
+        """Gets instruction set in memory."""
+        return self.memory
 
-    def get_registers(self):
-        """REPLACE
-        Args:
-            REPLACE (TYPE): DESCRIPTION
-
-        Returns:
-            REPLACE (TYPE): DESCRIPTION
-        """
-        return self.registers
-
-    def set_accumulator(self, value):
-        """REPLACE
-        Args:
-            REPLACE (TYPE): DESCRIPTION
-
-        Returns:
-            REPLACE (TYPE): DESCRIPTION
-        """
+    def set_accumulator(self, value: int) -> None:
+        """Sets value in accumulator registy."""
         self.accumulator = value
 
-    def set_register(self, idx, value):
-        """REPLACE
-        Args:
-            REPLACE (TYPE): DESCRIPTION
+    def set_instruction(self, idx, value: int) -> None:
+        """Sets instruction at specific memory index."""
+        self.memory[idx] = value
 
-        Returns:
-            REPLACE (TYPE): DESCRIPTION
-        """
-        self.registers[idx] = value
-
-    def set_registers(self, value):
-        """REPLACE
-        Args:
-            REPLACE (TYPE): DESCRIPTION
-
-        Returns:
-            REPLACE (TYPE): DESCRIPTION
-        """
-        self.registers = value
+    def set_instructions(self, value: int) -> None:
+        """Sets instruction set in memory."""
+        self.memory = value

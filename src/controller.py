@@ -101,7 +101,7 @@ class UVSimController(ArithmeticController, BranchController):
 
     def get_program_text(self):
         program_text = ""
-        registers = self.data_model.get_registers()
+        registers = self.data_model.get_instructions()
 
         for i, val in enumerate(registers):
             idx, val = str(i).rjust(2, "0"), (
@@ -116,7 +116,7 @@ class UVSimController(ArithmeticController, BranchController):
     def execute_program(self, read_from_user, write_to_console):
         """Execute Method Docstring Text."""
         while True:
-            self.instruction = self.data_model.get_register(self.cursor)
+            self.instruction = self.data_model.get_instruction(self.cursor)
             operation_code = abs(self.instruction) // 100
             register_idx = abs(self.instruction) % 100
 
@@ -129,10 +129,10 @@ class UVSimController(ArithmeticController, BranchController):
                 case 10:
                     self.data_model.set_register(register_idx, read_from_user())
                 case 11:
-                    write_to_console(self.data_model.get_register(register_idx))
+                    write_to_console(self.data_model.get_instruction(register_idx))
                 case 20:
                     self.data_model.set_accumulator(
-                        self.data_model.get_register(register_idx)
+                        self.data_model.get_instruction(register_idx)
                     )
                 case 21:
                     self.data_model.set_register(
@@ -142,7 +142,7 @@ class UVSimController(ArithmeticController, BranchController):
                     self.data_model.set_accumulator(
                         self.addition(
                             self.data_model.get_accumulator(),
-                            self.data_model.get_registers(),
+                            self.data_model.get_instructions(),
                             register_idx,
                         )
                     )
@@ -150,7 +150,7 @@ class UVSimController(ArithmeticController, BranchController):
                     self.data_model.set_accumulator(
                         self.subtraction(
                             self.data_model.get_accumulator(),
-                            self.data_model.get_registers(),
+                            self.data_model.get_instructions(),
                             register_idx,
                         )
                     )
@@ -158,7 +158,7 @@ class UVSimController(ArithmeticController, BranchController):
                     self.data_model.set_accumulator(
                         self.division(
                             self.data_model.get_accumulator(),
-                            self.data_model.get_registers(),
+                            self.data_model.get_instructions(),
                             register_idx,
                         )
                     )
@@ -166,7 +166,7 @@ class UVSimController(ArithmeticController, BranchController):
                     self.data_model.set_accumulator(
                         self.multiplication(
                             self.data_model.get_accumulator(),
-                            self.data_model.get_registers(),
+                            self.data_model.get_instructions(),
                             register_idx,
                         )
                     )
