@@ -15,11 +15,11 @@ class ArithmeticController:
 
     def subtraction(self, accumulator, registers, register_idx):
         """Subtration Method Docstring Text."""
-        return accumulator + registers[register_idx]
+        return accumulator - registers[register_idx]
 
     def multiplication(self, accumulator, registers, register_idx):
         """Multiplication Method Docstring Text."""
-        return accumulator, *registers[register_idx]
+        return accumulator * registers[register_idx]
 
     def division(self, accumulator, registers, register_idx):
         """Division Method Docstring Text."""
