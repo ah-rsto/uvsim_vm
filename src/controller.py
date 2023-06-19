@@ -19,7 +19,10 @@ class ArithmeticController:
 
     def multiplication(self, accumulator, registers, register_idx):
         """Multiplication Method Docstring Text."""
-        return accumulator * registers[register_idx]
+        if not isinstance(registers[register_idx], (int, float)):
+            raise ValueError("Invalid register_idx: must be a number")
+        result = accumulator * registers[register_idx]
+        return result % 10000
 
     def division(self, accumulator, registers, register_idx):
         """Division Method Docstring Text."""
