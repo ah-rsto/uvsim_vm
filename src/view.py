@@ -4,7 +4,7 @@ This module manages the view components.
 """
 
 import tkinter as tk
-from src.controller import UVSimController
+from controller import UVSimController
 from tkinter import filedialog
 import customtkinter
 

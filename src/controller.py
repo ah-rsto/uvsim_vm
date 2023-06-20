@@ -3,7 +3,7 @@
 This module manages the controller components.
 """
 
-from src.model import DataModel
+from model import DataModel
 
 
 class ArithmeticController:
