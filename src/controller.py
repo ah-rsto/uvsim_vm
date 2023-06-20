@@ -3,14 +3,14 @@
 This module manages the controller components.
 """
 
-from model import DataModel
+from src.model import DataModel
 
 
 class ArithmeticController:
     """Manager for arithmetic operations."""
 
     def addition(self, accumulator, instruction_set, instruction_idx) -> int:
-        """Addition Method Docstring Text.
+        """Adds designated memory value to accumulator.
 
         :param accumulator: Value in accumulator register
         :param instruction_set: Instruction set from memory
@@ -20,7 +20,7 @@ class ArithmeticController:
         return accumulator + instruction_set[instruction_idx]
 
     def subtraction(self, accumulator, instruction_set, instruction_idx) -> int:
-        """Subtration Method Docstring Text.
+        """Subtracts designated memory value from accumulator.
 
         :param accumulator: Value in accumulator register
         :param instruction_set: Instruction set from memory
@@ -30,7 +30,7 @@ class ArithmeticController:
         return accumulator - instruction_set[instruction_idx]
 
     def multiplication(self, accumulator, instruction_set, instruction_idx) -> int:
-        """Multiplication Method Docstring Text.
+        """Multiplies designated memory value with accumulator.
 
         :param accumulator: Value in accumulator register
         :param instruction_set: Instruction set from memory
@@ -43,7 +43,7 @@ class ArithmeticController:
         return result % 10000
 
     def division(self, accumulator, instruction_set, instruction_idx) -> int:
-        """Division Method Docstring Text.
+        """Divides accumulator by designated memory value.
 
         :param accumulator: Value in accumulator register
         :param instruction_set: Instruction set from memory
@@ -62,7 +62,7 @@ class BranchController:
     """Manager for branch operations."""
 
     def branch(self, instruction_idx) -> int:
-        """Branch Method Docstring Text.
+        """Sets runtime cursor to new position.
 
         :param instruction_idx: Instruction index in memory
         :return cursor: New position in instruction set runtime
@@ -74,7 +74,7 @@ class BranchController:
         return cursor
 
     def branch_zero(self, cursor, accumulator, instruction_idx) -> int:
-        """Branch Zero Method Docstring Text.
+        """Sets runtime cursor to new position if accumulator is zero.
 
         :param cursor: Current position in instruction set runtime
         :param accumulator: Value in accumulator register
@@ -89,7 +89,7 @@ class BranchController:
         return cursor
 
     def branch_negative(self, cursor, accumulator, instruction_idx) -> int:
-        """Branch Negative Method Docstring Text.
+        """Sets runtime cursor to new position if accumulator is negative.
 
         :param cursor: Current position in instruction set runtime
         :param accumulator: Value in accumulator register
@@ -104,12 +104,12 @@ class BranchController:
         return cursor
 
     def halt(self, halted, instruction_idx) -> int:
-        """Halt Method Docstring Text.
+        """Prints statement after program runtime completion.
 
-        :param halted: None
+        :param halted: Callback function for ui
         :param instruction_idx: Instruction index in memory
         :param instruction_idx: Instruction index in memory
-        :return cursor: FInal position in instruction set runtime
+        :return cursor: Final position in instruction set runtime
         """
         cursor = instruction_idx
         if halted:
@@ -124,7 +124,12 @@ class UVSimController(ArithmeticController, BranchController):
     """Manager for application runtime."""
 
     def __init__(self, halted, display_values=None):
-        """"""
+        """UVSimController initializer.
+
+        :param halted: Halted callback function for ui
+        :param display_values: Display value callback function for ui
+        :return: None
+        """
         super().__init__()
         self.data_model = DataModel()
         self.display_values = display_values
@@ -133,7 +138,7 @@ class UVSimController(ArithmeticController, BranchController):
         self.halted = halted
 
     def reset_accumulator(self) -> None:
-        """REPLACE
+        """Requests data model accumulator reset.
 
         :param: None
         :return: None
@@ -141,7 +146,7 @@ class UVSimController(ArithmeticController, BranchController):
         self.data_model.reset_accumulator()
 
     def reset_cursor(self) -> None:
-        """REPLACE
+        """Resets position in instruction set runtime
 
         :param: None
         :return: None
@@ -149,7 +154,7 @@ class UVSimController(ArithmeticController, BranchController):
         self.cursor = 0
 
     def reset_instruction(self) -> None:
-        """REPLACE
+        """Resets initial instruction assignment
 
         :param: None
         :return: None
@@ -157,16 +162,16 @@ class UVSimController(ArithmeticController, BranchController):
         self.instruction = 0
 
     def load_program(self, filename) -> None:
-        """REPLACE
+        """Requests data model program load from file
 
-        :param : None
+        :param filename: String containing file path
         :return: None
         """
         print(filename)
         self.data_model.load_program(filename)
 
     def get_program_text(self) -> str:
-        """REPLACE
+        """Requests and formats instruction set from data model.
 
         :param: None
         :return program_text: Formatted instruction and index for ui
@@ -182,7 +187,7 @@ class UVSimController(ArithmeticController, BranchController):
         return program_text
 
     def get_acc_cur(self) -> tuple[str, str]:
-        """REPLACE
+        """Requests and formats accumulator and cursor values.
 
         :param: None
         :return program_text: Formatted accumulator and cursor for ui
@@ -192,8 +197,8 @@ class UVSimController(ArithmeticController, BranchController):
     def execute_program(self, read_from_user, write_to_console) -> None:
         """Executes main runtime loop and instruction validation.
 
-        :param : None
-        :param : None
+        :param read_from_user: Input callback function for ui
+        :param write_to_console: Output  callback function for ui
         :return: None
         """
         while True:

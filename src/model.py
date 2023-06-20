@@ -8,6 +8,11 @@ class DataModel:
     """Manager for main memory and register objects."""
 
     def __init__(self):
+        """DataModel initializer.
+
+        :param: None
+        :return: None
+        """
         self.accumulator = 0
         self.memory = [0] * 100
 
