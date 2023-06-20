@@ -16,7 +16,7 @@ class DataModel:
         self.accumulator = 0
         self.memory = [0] * 100
 
-    def reset_accumulator(self):
+    def reset_accumulator(self) -> None:
         """Resets accumulator register.
 
         :param: None
