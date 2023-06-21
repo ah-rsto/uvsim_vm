@@ -1,6 +1,7 @@
 import unittest
+import sys
 from unittest.mock import patch
-from src.uvsim import UVSim
+from src.uvsim import UVSim, ArithmeticUnit, Memory
 
 
 class TestReadWriteStoreMemory(unittest.TestCase):
@@ -300,6 +301,48 @@ class TestMulDivHaltUnitTests(unittest.TestCase):
         with patch.object(sys, "exit") as mock_exit:
             self.S.halt()
             mock_exit.assert_called_once_with("Program Halted")
+
+
+class TestArithmeticUnit(unittest.TestCase):
+    def setUp(self):
+        self.arithmetic_unit = ArithmeticUnit()
+        self.memory = Memory()
+        self.memory.memory = [0] * 100
+
+    def test_addition(self):
+        operand = 0
+        accumulator = 100
+        self.memory.memory[operand] = 50
+        result = self.arithmetic_unit.addition(operand, accumulator, self.memory.memory)
+        self.assertEqual(result, 150)
+
+    def test_subtraction(self):
+        operand = 1
+        accumulator = 100
+        self.memory.memory[operand] = 50
+        result = self.arithmetic_unit.subtraction(operand, accumulator, self.memory.memory)
+        self.assertEqual(result, 50)
+
+    def test_multiplication(self):
+        operand = 2
+        accumulator = 10
+        self.memory.memory[operand] = 5
+        result = self.arithmetic_unit.multiplication(operand, accumulator, self.memory.memory)
+        self.assertEqual(result, 50)
+
+    def test_division(self):
+        operand = 3
+        accumulator = 100
+        self.memory.memory[operand] = 10
+        result = self.arithmetic_unit.division(operand, accumulator, self.memory.memory)
+        self.assertEqual(result, 10)
+
+        operand = 4
+        accumulator = 100
+        self.memory.memory[operand] = 0
+        with self.assertRaises(ValueError):
+            self.arithmetic_unit.division(operand, accumulator, self.memory.memory)
+
             
             
 if __name__ == '__main__':
