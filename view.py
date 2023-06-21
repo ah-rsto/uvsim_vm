@@ -112,19 +112,6 @@ class UVSimGUI(customtkinter.CTk):
 
         self.program_text.insert(tk.INSERT, program_text)
 
-    # def open_program(self):
-    #     # self.program_text.delete("1.0", tk.END)
-    #     self.filename = filedialog.askopenfilename(
-    #         initialdir="/",
-    #         title="Select file",
-    #         filetypes=(("txt files", "*.txt"), ("all files", "*.*")),
-    #     )
-    #     if self.filename == "":
-    #         self.program_text.insert(tk.INSERT, "No file selected. Try again.")
-    #     self.uvsim.load_program(self.filename)
-    #     self.update_program()
-    #     self.reset_textboxes()
-    #     # self.execute_program()
     def open_program(self, filename: str = "") -> None:
         """Requests program instruction set and displays for user.
 
@@ -141,6 +128,11 @@ class UVSimGUI(customtkinter.CTk):
             )
             if self.filename == "":
                 self.program_text.insert(tk.INSERT, "No file selected. Try again.")
+            elif not self.filename.endswith(".txt"):
+                self.program_text.insert(
+                    tk.INSERT, "Invalid file type. Please select a .txt file."
+                )
+                self.filename = ""
         self.uvsim.load_program(self.filename)
         self.update_program()
         self.reset_textboxes()
