@@ -309,37 +309,66 @@ class TestArithmeticUnit(unittest.TestCase):
         self.memory = Memory()
         self.memory.memory = [0] * 100
 
-    def test_addition(self):
+    def test_addition_success(self):
         operand = 0
-        accumulator = 100
-        self.memory.memory[operand] = 50
-        result = self.arithmetic_unit.addition(operand, accumulator, self.memory.memory)
-        self.assertEqual(result, 150)
+        self.memory.memory[operand] = 500
+        accumulator = 1000
+        self.arithmetic_unit.addition(operand, accumulator, self.memory.memory)
+        self.assertEqual(accumulator, 1500)
 
-    def test_subtraction(self):
+    def test_addition_negative(self):
         operand = 1
-        accumulator = 100
-        self.memory.memory[operand] = 50
-        result = self.arithmetic_unit.subtraction(operand, accumulator, self.memory.memory)
-        self.assertEqual(result, 50)
+        self.memory.memory[operand] = -300
+        accumulator = -500
+        self.arithmetic_unit.addition(operand, accumulator, self.memory.memory)
+        self.assertEqual(accumulator, -800)
 
-    def test_multiplication(self):
+    def test_subtraction_success(self):
         operand = 2
-        accumulator = 10
-        self.memory.memory[operand] = 5
-        result = self.arithmetic_unit.multiplication(operand, accumulator, self.memory.memory)
-        self.assertEqual(result, 50)
+        self.memory.memory[operand] = 500
+        accumulator = 1000
+        self.arithmetic_unit.subtraction(operand, accumulator, self.memory.memory)
+        self.assertEqual(accumulator, 500)
 
-    def test_division(self):
+    def test_subtraction_negative(self):
         operand = 3
-        accumulator = 100
-        self.memory.memory[operand] = 10
-        result = self.arithmetic_unit.division(operand, accumulator, self.memory.memory)
-        self.assertEqual(result, 10)
+        self.memory.memory[operand] = -300
+        accumulator = -500
+        self.arithmetic_unit.subtraction(operand, accumulator, self.memory.memory)
+        self.assertEqual(accumulator, -200)
 
+    def test_multiplication_success(self):
         operand = 4
+        self.memory.memory[operand] = 5
+        accumulator = 10
+        self.arithmetic_unit.multiplication(operand, accumulator, self.memory.memory)
+        self.assertEqual(accumulator, 50)
+
+    def test_multiplication_invalid_operand(self):
+        operand = 5
+        self.memory.memory[operand] = 'not a number'
+        accumulator = 10
+        with self.assertRaises(ValueError):
+            self.arithmetic_unit.multiplication(operand, accumulator, self.memory.memory)
+
+    def test_division_success(self):
+        operand = 6
+        self.memory.memory[operand] = 10
         accumulator = 100
+        self.arithmetic_unit.division(operand, accumulator, self.memory.memory)
+        self.assertEqual(accumulator, 10)
+
+    def test_division_invalid_operand(self):
+        operand = 7
+        self.memory.memory[operand] = 'not a number'
+        accumulator = 100
+        with self.assertRaises(ValueError):
+            self.arithmetic_unit.division(operand, accumulator, self.memory.memory)
+
+    def test_division_divide_by_zero(self):
+        operand = 8
         self.memory.memory[operand] = 0
+        accumulator = 100
         with self.assertRaises(ValueError):
             self.arithmetic_unit.division(operand, accumulator, self.memory.memory)
 
