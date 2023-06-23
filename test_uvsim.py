@@ -7,6 +7,7 @@ from model import DataModel
 
 # Added this for testing load program.
 import os
+import sys
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -318,6 +319,12 @@ class TestBranchController(unittest.TestCase):
                 accumulator,
                 instruction_idx,
             )
+
+    def test_halt_sucess(self):
+        halted, instruction_idx = None, 0
+
+        # as gui app it no longer actually stops full application run
+        self.assertEquals(self.uvsim.halt(halted, instruction_idx), instruction_idx)
 
 
 if __name__ == "__main__":
