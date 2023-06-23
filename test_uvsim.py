@@ -1,5 +1,5 @@
 from unittest.mock import MagicMock, patch
-from controller import UVSimController
+from controller import UVSimController, ArithmeticController
 
 import unittest
 
@@ -8,6 +8,76 @@ from model import DataModel
 # Added this for testing load program.
 import os
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+class TestArithmeticUnit(unittest.TestCase):
+    def setUp(self):
+        self.arithmetic_unit = ArithmeticController()
+        self.memory = DataModel()
+        # self.memory.memory = [0] * 100
+
+    def test_addition_success(self):
+        operand = 0
+        self.memory.memory[operand] = 500
+        accumulator = 1000
+        new_accumulator = self.arithmetic_unit.addition(accumulator, self.memory.memory, operand)
+        self.assertEqual(new_accumulator, 1500)
+
+    def test_addition_negative(self):
+        operand = 1
+        self.memory.memory[operand] = -300
+        accumulator = -500
+        new_accumulator = self.arithmetic_unit.addition(accumulator, self.memory.memory, operand)
+        self.assertEqual(new_accumulator, -800)
+
+    def test_subtraction_success(self):
+        operand = 2
+        self.memory.memory[operand] = 500
+        accumulator = 1000
+        new_accumulator = self.arithmetic_unit.subtraction(accumulator, self.memory.memory, operand)
+        self.assertEqual(new_accumulator, 500)
+
+    def test_subtraction_negative(self):
+        operand = 3
+        self.memory.memory[operand] = -300
+        accumulator = -500
+        new_accumulator = self.arithmetic_unit.subtraction(accumulator, self.memory.memory, operand)
+        self.assertEqual(new_accumulator, -200)
+
+    def test_multiplication_success(self):
+        operand = 4
+        self.memory.memory[operand] = 5
+        accumulator = 10
+        new_accumulator = self.arithmetic_unit.multiplication(accumulator, self.memory.memory, operand)
+        self.assertEqual(new_accumulator, 50)
+
+    def test_multiplication_invalid_operand(self):
+        operand = 5
+        self.memory.memory[operand] = 'not a number'
+        accumulator = 10
+        with self.assertRaises(ValueError):
+            self.arithmetic_unit.multiplication(accumulator, self.memory.memory, operand)
+
+    def test_division_success(self):
+        operand = 6
+        self.memory.memory[operand] = 10
+        accumulator = 100
+        new_accumulator = self.arithmetic_unit.division(accumulator, self.memory.memory, operand)
+        self.assertEqual(new_accumulator, 10)
+
+    def test_division_invalid_operand(self):
+        operand = 7
+        self.memory.memory[operand] = 'not a number'
+        accumulator = 100
+        with self.assertRaises(ValueError):
+            self.arithmetic_unit.division(accumulator, self.memory.memory, operand)
+
+    def test_division_divide_by_zero(self):
+        operand = 8
+        self.memory.memory[operand] = 0
+        accumulator = 100
+        with self.assertRaises(ValueError):
+            self.arithmetic_unit.division(accumulator, self.memory.memory, operand)
+
 
 class TestDataModel(unittest.TestCase):
     def setUp(self):
