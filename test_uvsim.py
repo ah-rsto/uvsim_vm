@@ -288,14 +288,10 @@ class TestBranchController(unittest.TestCase):
             accumulator = i
             instruction_idx = i + 5
 
-            self.uvsim.cursor = i
-            self.uvsim.data_model.accumulator = i
-            self.uvsim.instruction_idx = i + 5
-
             self.uvsim.branch_zero(cursor, accumulator, instruction_idx)
             # Result -1 to handle auto increment after operations
-            self.assertNotEqual(self.uvsim.cursor, self.uvsim.instruction_idx - 1)
-            self.assertEqual(self.uvsim.cursor, i)
+            self.assertNotEqual(cursor, instruction_idx - 1)
+            self.assertEqual(cursor, i)
 
     def test_branch_zero_index_range_success(self):
         for i in range(0, len(self.uvsim.data_model.memory) - 1):
