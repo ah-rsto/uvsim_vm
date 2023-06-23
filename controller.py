@@ -7,65 +7,111 @@ from model import DataModel
 
 
 class ArithmeticController:
-    """Arithmetic Controller Class Docstring Text."""
+    """Manager for arithmetic operations."""
 
-    def addition(self, accumulator, registers, register_idx):
-        """Addition Method Docstring Text."""
-        return accumulator + registers[register_idx]
+    def addition(self, accumulator, instruction_set, instruction_idx) -> int:
+        """Adds designated memory value to accumulator.
 
-    def subtraction(self, accumulator, registers, register_idx):
-        """Subtration Method Docstring Text."""
-        return accumulator - registers[register_idx]
+        :param accumulator: Value in accumulator register
+        :param instruction_set: Instruction set from memory
+        :param instruction_idx: Instruction index in memory
+        :return solution: Sum of accumulator and memory value
+        """
+        return accumulator + instruction_set[instruction_idx]
 
-    def multiplication(self, accumulator, registers, register_idx):
-        """Multiplication Method Docstring Text."""
-        if not isinstance(registers[register_idx], (int, float)):
-            raise ValueError("Invalid register_idx: must be a number")
-        result = accumulator * registers[register_idx]
+    def subtraction(self, accumulator, instruction_set, instruction_idx) -> int:
+        """Subtracts designated memory value from accumulator.
+
+        :param accumulator: Value in accumulator register
+        :param instruction_set: Instruction set from memory
+        :param instruction_idx: Instruction index in memory
+        :return solution: Difference of accumulator and memory value
+        """
+        return accumulator - instruction_set[instruction_idx]
+
+    def multiplication(self, accumulator, instruction_set, instruction_idx) -> int:
+        """Multiplies designated memory value with accumulator.
+
+        :param accumulator: Value in accumulator register
+        :param instruction_set: Instruction set from memory
+        :param instruction_idx: Instruction index in memory
+        :return solution: Product of accumulator and memory value
+        """
+        if not isinstance(instruction_set[instruction_idx], (int, float)):
+            raise ValueError("Invalid instruction_idx: must be a number")
+        result = accumulator * instruction_set[instruction_idx]
         return result % 10000
 
-    def division(self, accumulator, registers, register_idx):
-        """Division Method Docstring Text."""
-        if not isinstance(registers[register_idx], (int, float)):
-            raise ValueError("Invalid register_idx: must be a number")
-        if registers[register_idx] == 00:
-            raise ValueError("Invalid register_idx: Cannot divide by 0")
+    def division(self, accumulator, instruction_set, instruction_idx) -> int:
+        """Divides accumulator by designated memory value.
+
+        :param accumulator: Value in accumulator register
+        :param instruction_set: Instruction set from memory
+        :param instruction_idx: Instruction index in memory
+        :return solution: Quotient of accumulator dividend and memory value
+        """
+        if not isinstance(instruction_set[instruction_idx], (int, float)):
+            raise ValueError("Invalid instruction_idx: must be a number")
+        if instruction_set[instruction_idx] == 00:
+            raise ValueError("Invalid instruction_idx: Cannot divide by 0")
         else:
-            return (accumulator // registers[register_idx]) % 10000
+            return (accumulator // instruction_set[instruction_idx]) % 10000
 
 
 class BranchController:
-    """Branch Controller Class Docstring Text."""
+    """Manager for branch operations."""
 
-    def branch(self, register_idx):
-        """Branch Method Docstring Text."""
-        if -2 < register_idx and register_idx < 100:
-            cursor = register_idx - 1
+    def branch(self, instruction_idx) -> int:
+        """Sets runtime cursor to new position.
+
+        :param instruction_idx: Instruction index in memory
+        :return cursor: New position in instruction set runtime
+        """
+        if -2 < instruction_idx and instruction_idx < 100:
+            cursor = instruction_idx - 1
         else:
-            raise IndexError(f"Memory index '{register_idx}' not in range.")
+            raise IndexError(f"Memory index '{instruction_idx}' not in range.")
         return cursor
 
-    def branch_zero(self, cursor, accumulator, register_idx):
-        """Branch Zero Method Docstring Text."""
+    def branch_zero(self, cursor, accumulator, instruction_idx) -> int:
+        """Sets runtime cursor to new position if accumulator is zero.
+
+        :param cursor: Current position in instruction set runtime
+        :param accumulator: Value in accumulator register
+        :param instruction_idx: Instruction index in memory
+        :return cursor: New position in instruction set runtime
+        """
         if accumulator == 0:
-            if -2 < register_idx and register_idx < 100:
-                cursor = register_idx - 1
+            if -2 < instruction_idx and instruction_idx < 100:
+                cursor = instruction_idx - 1
             else:
-                raise IndexError(f"Memory index '{register_idx}' not in range.")
+                raise IndexError(f"Memory index '{instruction_idx}' not in range.")
         return cursor
 
-    def branch_negative(self, cursor, accumulator, register_idx):
-        """Branch Negative Method Docstring Text."""
+    def branch_negative(self, cursor, accumulator, instruction_idx) -> int:
+        """Sets runtime cursor to new position if accumulator is negative.
+
+        :param cursor: Current position in instruction set runtime
+        :param accumulator: Value in accumulator register
+        :param instruction_idx: Instruction index in memory
+        :return cursor: New position in instruction set runtime
+        """
         if accumulator < 0:
-            if -2 < register_idx and register_idx < 100:
-                cursor = register_idx - 1
+            if -2 < instruction_idx and instruction_idx < 100:
+                cursor = instruction_idx - 1
             else:
-                raise IndexError(f"Memory index '{register_idx}' not in range.")
+                raise IndexError(f"Memory index '{instruction_idx}' not in range.")
         return cursor
 
-    def halt(self, halted, register_idx):
-        """Halt Method Docstring Text."""
-        cursor = register_idx
+    def halt(self, halted, instruction_idx) -> int:
+        """Prints statement after program runtime completion.
+
+        :param halted: Callback function for ui
+        :param instruction_idx: Instruction index in memory
+        :param instruction_idx: Instruction index in memory
+        :return cursor: Final position in instruction set runtime
+        """
+        cursor = instruction_idx
         if halted:
             halted()
             return cursor
@@ -75,10 +121,15 @@ class BranchController:
 
 
 class UVSimController(ArithmeticController, BranchController):
-    """App Controller Class Docstring Text."""
+    """Manager for application runtime."""
 
-    def __init__(self, halted, display_values=None):
-        """"""
+    def __init__(self, halted=None, display_values=None):
+        """UVSimController initializer.
+
+        :param halted: Halted callback function for ui
+        :param display_values: Display value callback function for ui
+        :return: None
+        """
         super().__init__()
         self.data_model = DataModel()
         self.display_values = display_values
@@ -110,25 +161,46 @@ class UVSimController(ArithmeticController, BranchController):
         """
         self.instruction = 0
 
-    def load_program(self, filename):
+    def load_program(self, filename) -> None:
+        """Requests data model program load from file
+
+        :param filename: String containing file path
+        :return: None
+        """
+        print(filename)
         self.data_model.load_program(filename)
 
-    def get_program_text(self):
-        program_text = ""
-        registers = self.data_model.get_instructions()
+    def get_program_text(self) -> str:
+        """Requests and formats instruction set from data model.
 
-        for i, val in enumerate(registers):
+        :param: None
+        :return program_text: Formatted instruction and index for ui
+        """
+        program_text = ""
+        instruction_set = self.data_model.get_instructions()
+
+        for i, val in enumerate(instruction_set):
             idx, val = str(i).rjust(2, "0"), (
                 val if "-" in str(val) else "+" + str(val)
             )
             program_text += f"{idx}:   {val}\n"
         return program_text
 
-    def get_acc_cur(self):
+    def get_acc_cur(self) -> tuple[str, str]:
+        """Requests and formats accumulator and cursor values.
+
+        :param: None
+        :return program_text: Formatted accumulator and cursor for ui
+        """
         return f"{self.data_model.get_accumulator()}\n", f"{self.cursor}\n"
 
-    def execute_program(self, read_from_user, write_to_console):
-        """Execute Method Docstring Text."""
+    def execute_program(self, read_from_user, write_to_console) -> None:
+        """Executes main runtime loop and instruction validation.
+
+        :param read_from_user: Input callback function for ui
+        :param write_to_console: Output  callback function for ui
+        :return: None
+        """
         while True:
             self.instruction = self.data_model.get_instruction(self.cursor)
             operation_code = abs(self.instruction) // 100

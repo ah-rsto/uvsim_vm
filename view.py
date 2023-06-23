@@ -1,6 +1,6 @@
 """View
 
-This module manages the view model.
+This module manages the view components.
 """
 
 import tkinter as tk
@@ -14,6 +14,11 @@ customtkinter.set_default_color_theme("blue")
 
 class UVSimGUI(customtkinter.CTk):
     def __init__(self):
+        """UVSimGUI initializer.
+
+        :param: None
+        :return: None
+        """
         super().__init__()
         self.uvsim = UVSimController(self.halted, self.display_values)
 
@@ -50,7 +55,7 @@ class UVSimGUI(customtkinter.CTk):
             font=customtkinter.CTkFont(size=12, weight="normal"),
         )
         self.cursor.grid(row=2, column=0, padx=20, pady=10)
-        self.cursor.insert(tk.INSERT, "Counter:\n")
+        self.cursor.insert(tk.INSERT, "Cursor:\n")
 
         self.console_output = customtkinter.CTkTextbox(
             self.sidebar_frame,
@@ -77,16 +82,32 @@ class UVSimGUI(customtkinter.CTk):
         )
         self.execute_btn.grid(row=3, column=1, padx=20, pady=10, sticky="nsew")
 
-    def reset_textbox(self, textbox, text):
+    def reset_textbox(self, textbox: customtkinter.CTkTextbox, text: str) -> None:
+        """Resets specified textbox content with new text.
+
+        :param textbox: Textbox to be reset with new content
+        :param text: Text to replace original textbox content
+        :return: None
+        """
         textbox.delete("1.0", tk.END)
         textbox.insert(tk.INSERT, text)
 
-    def reset_textboxes(self):
-        self.reset_textbox(self.accumulator_label, "Accumulator:\n")
-        self.reset_textbox(self.cursor, "Counter:\n")
-        self.reset_textbox(self.console_output, "Console output:\n")
+    def reset_textboxes(self) -> None:
+        """Resets default textboxes for subsequent runs.
 
-    def read_from_user(self):
+        :param: None
+        :return: None
+        """
+        self.reset_textbox(self.accumulator_label, "Accumulator:\n")
+        self.reset_textbox(self.cursor, "Cursor:\n")
+        self.reset_textbox(self.console_output, "Console Output:\n")
+
+    def read_from_user(self) -> int:
+        """Reads input from user.
+
+        :param: None
+        :return value: Input value provided by user
+        """
         dialog = customtkinter.CTkInputDialog(
             text="Enter a number from -9999 to 9999", title="READ Input"
         )
@@ -101,11 +122,21 @@ class UVSimGUI(customtkinter.CTk):
             self.write_to_console("Invalid input. Try again.")
             return self.read_from_user()
 
-    def write_to_console(self, value):
+    def write_to_console(self, value: str) -> None:
+        """Writes value to output for user.
+
+        :param: None
+        :return value: Output value requested from memory
+        """
         self.console_output.insert(tk.END, str(value) + "\n")
         self.console_output.see(tk.END)
 
-    def update_program(self):
+    def update_program(self) -> None:
+        """Updates program dialog text content.
+
+        :param: None
+        :return: None
+        """
         self.program_text.delete("1.0", tk.END)
         program_text = "Memory Registers:\n"
         program_text += self.uvsim.get_program_text()
@@ -128,35 +159,42 @@ class UVSimGUI(customtkinter.CTk):
             )
             if self.filename == "":
                 self.program_text.insert(tk.INSERT, "No file selected. Try again.")
-            elif not self.filename.endswith(".txt"):
-                self.program_text.insert(
-                    tk.INSERT, "Invalid file type. Please select a .txt file."
-                )
-                self.filename = ""
         self.uvsim.load_program(self.filename)
         self.update_program()
         self.reset_textboxes()
         # self.execute_program()
 
-    def execute_program(self):
-        # self.update_program()
-        # new lines added
+    def execute_program(self) -> None:
+        """Requests program execution.
+
+        :param: None
+        :return: None
+        """
         self.uvsim.reset_accumulator()
         self.uvsim.reset_cursor()
         self.uvsim.reset_instruction()
         self.open_program(filename=self.filename)
-
-        # end of new lines added
         self.reset_textboxes()
         self.uvsim.execute_program(self.read_from_user, self.write_to_console)
 
-    def display_values(self, accumulator, counter):
+    def display_values(self, accumulator: str, cursor: str) -> None:
+        """Requests accumulator and cursor value to display for user.
+
+        :param accumulator: Value in accumulator register
+        :param cursor: Current position in instruction set runtime
+        :return: None
+        """
         accumulator, cursor = self.uvsim.get_acc_cur()
 
         self.accumulator_label.insert(tk.END, str(accumulator))
         self.cursor.insert(tk.END, str(cursor))
 
-    def halted(self):
+    def halted(self) -> None:
+        """Displays execution completion message for user.
+
+        :param: None
+        :return: None
+        """
         self.write_to_console(
             "Program completed.\n\nTo run another file, click 'Upload BasicML file'"
         )

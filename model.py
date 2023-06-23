@@ -38,7 +38,7 @@ class DataModel:
                         self.memory[idx] = int(line.strip())
                 break
             except FileNotFoundError:
-                # print("File not found. Try again.") - had to change this so there wasn't an infinite loop
+                # print("File not found. Try again.") - had to change this because it caused an infinite loop (Taylie)
                 raise FileNotFoundError('File not found. Try again.')
             # except IndexError:
             #     print("Too many lines in program. Try again.")
