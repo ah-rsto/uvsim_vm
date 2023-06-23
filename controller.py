@@ -167,7 +167,6 @@ class UVSimController(ArithmeticController, BranchController):
         :param filename: String containing file path
         :return: None
         """
-        print(filename)
         self.data_model.load_program(filename)
 
     def get_program_text(self) -> str:
