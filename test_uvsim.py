@@ -88,12 +88,10 @@ class TestUVSimController(unittest.TestCase):
         self.controller.reset_instruction()
         self.assertEqual(self.controller.instruction, 0)
 
-    @patch('builtins.print')
-    def test_load_program(self, mock_print):
+    def test_load_program(self):
         self.controller.data_model.load_program = MagicMock()
-        self.controller.load_program("test.txt")
-        mock_print.assert_called_once_with("test.txt")
-        self.controller.data_model.load_program.assert_called_once_with("test.txt")
+        self.controller.load_program("Test1.txt")
+        self.controller.data_model.load_program.assert_called_once_with("Test1.txt")
 
     def test_get_program_text(self):
         self.controller.data_model.get_instructions = MagicMock(return_value=[100, -200, 300])
