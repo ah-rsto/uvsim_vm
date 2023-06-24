@@ -1,4 +1,5 @@
 import unittest
+<<<<<<< HEAD:archive/test/test_uvsim.py
 import sys
 from unittest.mock import patch, MagicMock
 from archive.uvsim import UVSim, ArithmeticUnit, Memory
@@ -9,6 +10,11 @@ from model import DataModel
 import os
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
+=======
+from unittest.mock import patch
+from uvsim import UVSim
+import sys
+>>>>>>> master:test/test_uvsim.py
 
 
 class TestReadWriteStoreMemory(unittest.TestCase):
@@ -50,6 +56,13 @@ class TestReadWriteStoreMemory(unittest.TestCase):
         self.uvsim.operand = 100
         with self.assertRaises(IndexError):
             self.uvsim.store_memory()
+
+
+class TestAddSubLoad(unittest.TestCase):
+    def setUp(self):
+        self.uvsim = UVSim()
+        self.uvsim.operand = 0
+        self.uvsim.memory = [0]*100
 
     def test_addition_success(self):
         self.uvsim.accumulator = 1000
