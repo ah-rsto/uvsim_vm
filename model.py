@@ -7,7 +7,7 @@ This module manages the data model components.
 class DataModel:
     """Manager for main memory and register objects."""
 
-    def __init__(self):
+    def __init__(self, loader):
         """DataModel initializer.
 
         :param: None
@@ -15,6 +15,7 @@ class DataModel:
         """
         self.accumulator = 0
         self.memory = [0] * 100
+        self.loader = loader
 
     def reset_accumulator(self) -> None:
         """Resets accumulator register.
@@ -24,26 +25,27 @@ class DataModel:
         """
         self.accumulator = 0
 
-    def load_program(self, filename: str) -> None:
+    def load_program(self, source, is_file: bool) -> None:
         """Loads program instructions from file.
 
         :param filename: String containing file path
         :return: None
         """
-        while True:
-            try:
-                # filename = input("Enter the name of the file to load: ")
-                with open(filename, "r") as f_in:
-                    for idx, line in enumerate(f_in):
-                        self.memory[idx] = int(line.strip())
-                break
-            except FileNotFoundError:
-                # print("File not found. Try again.") - had to change this because it caused an infinite loop (Taylie)
-                raise FileNotFoundError('File not found. Try again.')
-            # except IndexError:
-            #     print("Too many lines in program. Try again.")
-            # except Exception:
-            #     print("An exception occurred. Try again.")
+        if is_file:
+            instructions = self.loader.load_from_file(source)
+        else:
+            instructions = self.loader.load_from_input(source)
+
+        for idx, instruction in enumerate(instructions):
+            self.memory[idx] = instruction
+        # while True:
+        #     try:
+        #         with open(filename, "r") as f_in:
+        #             for idx, line in enumerate(f_in):
+        #                 self.memory[idx] = int(line.strip())
+        #         break
+        #     except FileNotFoundError:
+        #         raise FileNotFoundError('File not found. Try again.')
 
     def save_program(self, filename: str) -> None:
         """Saves modified program to file. INCOMPLETE

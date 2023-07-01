@@ -6,6 +6,29 @@ This module manages the controller components.
 from model import DataModel
 
 
+class Loader:
+    def __init__(self):
+        pass
+
+    def load_from_file(self, filename: str) -> list:
+        instructions = []
+        while True:
+            try:
+                with open(filename, "r") as f:
+                    for line in f:
+                        instructions.append(int(line.strip()))
+                break
+            except FileNotFoundError:
+                raise FileNotFoundError(f"File '{filename}' not found.")
+        return instructions
+
+    def load_from_input(self, user_input: list) -> list:
+        instructions = []
+        for line in user_input:
+            instructions.append(int(line))
+        return instructions
+
+
 class ArithmeticController:
     """Manager for arithmetic operations."""
 
@@ -123,7 +146,7 @@ class BranchController:
 class UVSimController(ArithmeticController, BranchController):
     """Manager for application runtime."""
 
-    def __init__(self, halted=None, display_values=None):
+    def __init__(self, halted=None):
         """UVSimController initializer.
 
         :param halted: Halted callback function for ui
@@ -131,8 +154,7 @@ class UVSimController(ArithmeticController, BranchController):
         :return: None
         """
         super().__init__()
-        self.data_model = DataModel()
-        self.display_values = display_values
+        self.data_model = DataModel(Loader())
         self.cursor = 0
         self.instruction = 0
         self.halted = halted
@@ -161,13 +183,14 @@ class UVSimController(ArithmeticController, BranchController):
         """
         self.instruction = 0
 
-    def load_program(self, filename) -> None:
+    def load_program(self, source, is_file) -> None:
         """Requests data model program load from file
 
         :param filename: String containing file path
         :return: None
         """
-        self.data_model.load_program(filename)
+        # self.data_model.load_program(filename)
+        self.data_model.load_program(source, is_file)
 
     def get_program_text(self) -> str:
         """Requests and formats instruction set from data model.
@@ -185,13 +208,13 @@ class UVSimController(ArithmeticController, BranchController):
             program_text += f"{idx}:   {val}\n"
         return program_text
 
-    def get_acc_cur(self) -> tuple[str, str]:
+    def get_acc_cur(self):
         """Requests and formats accumulator and cursor values.
 
         :param: None
         :return program_text: Formatted accumulator and cursor for ui
         """
-        return f"{self.data_model.get_accumulator()}\n", f"{self.cursor}\n"
+        return f"Accumulator: {self.data_model.get_accumulator()}\nCursor: {self.cursor}\n"
 
     def execute_program(self, read_from_user, write_to_console) -> None:
         """Executes main runtime loop and instruction validation.
@@ -200,15 +223,11 @@ class UVSimController(ArithmeticController, BranchController):
         :param write_to_console: Output  callback function for ui
         :return: None
         """
+        
         while True:
             self.instruction = self.data_model.get_instruction(self.cursor)
             operation_code = abs(self.instruction) // 100
             instruction_idx = abs(self.instruction) % 100
-
-            if self.display_values:
-                self.display_values(
-                    f"{self.data_model.get_accumulator()}\n", f"{self.cursor}\n"
-                )
 
             match operation_code:
                 case 10:
@@ -276,3 +295,5 @@ class UVSimController(ArithmeticController, BranchController):
                     break
 
             self.cursor += 1
+        
+        
