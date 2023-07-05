@@ -85,8 +85,8 @@ class UVSimGUI(customtkinter.CTk):
             row=0, column=1, rowspan=2, padx=20, pady=(20, 0), sticky="nsew"
         )
         self.program_text.insert(tk.INSERT, "BasicML program will be displayed here.")
-        # self.program_text.bind("<KeyRelease>", self.limit_size, add="+")
-        # self.program_text.bind("<<Paste>>", self.limit_size, add="+")
+        self.program_text.bind("<KeyRelease>", self.limit_size, add="+")
+        self.program_text.bind("<<Paste>>", self.limit_size, add="+")
 
         self.execute_btn = customtkinter.CTkButton(
             self, text="Run File", command=self.execute_program
@@ -100,7 +100,7 @@ class UVSimGUI(customtkinter.CTk):
         :return: None
         """
         value = self.program_text.get("1.0", "end").split("\n")[:-1]
-        if len(value) > 100:
+        if len(value) > 101:
             self.program_text.delete("1.0", "end")
             self.program_text.insert("end", "\n".join(value[:101]))
 
@@ -249,7 +249,7 @@ class UVSimGUI(customtkinter.CTk):
     def change_color_scheme(self, primary_color=None, secondary_color=None) -> None:
         if primary_color is None or secondary_color is None:
             primary_color = colorchooser.askcolor(title="Choose primary color")[1]
-            secondary_color = colorchooser.askcolor(title="Choose secondary color")[1]
+            secondary_color = colorchooser.askcolor(title="Choose off-color color")[1]
 
         # if primary_color is None or secondary_color is None:
         #     return
