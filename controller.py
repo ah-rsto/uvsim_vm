@@ -203,9 +203,11 @@ class UVSimController(ArithmeticController, BranchController):
 
         for i, val in enumerate(instruction_set):
             idx, val = str(i).rjust(2, "0"), (
-                val if "-" in str(val) else "+" + str(val)
+                str(val).rjust(4, "0")
+                if "-" in str(val)
+                else f"+{str(val).rjust(4, '0')}"
             )
-            program_text += f"{idx}:   {val}\n"
+            program_text += f"{idx}: {val}\n"
         return program_text
 
     def get_acc_cur(self):
@@ -214,7 +216,9 @@ class UVSimController(ArithmeticController, BranchController):
         :param: None
         :return program_text: Formatted accumulator and cursor for ui
         """
-        return f"Accumulator: {self.data_model.get_accumulator()}\nCursor: {self.cursor}\n"
+        return (
+            f"Accumulator: {self.data_model.get_accumulator()}\nCursor: {self.cursor}\n"
+        )
 
     def execute_program(self, read_from_user, write_to_console) -> None:
         """Executes main runtime loop and instruction validation.
@@ -223,7 +227,7 @@ class UVSimController(ArithmeticController, BranchController):
         :param write_to_console: Output  callback function for ui
         :return: None
         """
-        
+
         while True:
             self.instruction = self.data_model.get_instruction(self.cursor)
             operation_code = abs(self.instruction) // 100
@@ -275,7 +279,7 @@ class UVSimController(ArithmeticController, BranchController):
                         )
                     )
                 case 40:
-                    self.cursor = self.branch(instruction_idx, self.cursor)
+                    self.cursor = self.branch(instruction_idx)
                 case 41:
                     self.cursor = self.branch_negative(
                         self.cursor, self.data_model.get_accumulator(), instruction_idx
@@ -295,5 +299,3 @@ class UVSimController(ArithmeticController, BranchController):
                     break
 
             self.cursor += 1
-        
-        

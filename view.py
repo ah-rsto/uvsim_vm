@@ -189,9 +189,9 @@ class UVSimGUI(customtkinter.CTk):
             for i, val in enumerate(instruction_set):
                 idx = str(i).rjust(2, "0")
                 if i < len(lines):
-                    program_text += str(idx) + ": " + lines[i]
+                    program_text += f"{str(idx)}: {lines[i].strip()}\n"
                 else:
-                    program_text += str(idx) + ": " + "+" + str(val) + "\n"
+                    program_text += f"{str(idx)}: +0000\n"
 
             self.program_text.insert(tk.INSERT, program_text)
         # self.update_program()
