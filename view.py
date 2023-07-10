@@ -181,7 +181,6 @@ class UVSimGUI(customtkinter.CTk):
             )
             if self.filename == "":
                 self.program_text.insert(tk.INSERT, "No file selected. Try again.")
-        # self.uvsim.load_program(self.filename, True)
         with open(self.filename, "r") as f:
             lines = f.readlines()
             program_text = "BasicML Program:\n"
@@ -194,11 +193,14 @@ class UVSimGUI(customtkinter.CTk):
                     program_text += f"{str(idx)}: +0000\n"
 
             self.program_text.insert(tk.INSERT, program_text)
-        # self.update_program()
         self.reset_textboxes()
-        # self.execute_program()
 
     def get_input(self):
+        """Gets input from user and converts to readable format.
+
+        :param: None
+        :return: None
+        """
         user_input = self.program_text.get("1.0", tk.END)
         lines = user_input.split("\n")
         numbers = []
@@ -228,6 +230,11 @@ class UVSimGUI(customtkinter.CTk):
         self.update_program()
 
     def update_status(self):
+        """Updates accumulator and cursor status.
+
+        :param: None
+        :return: None
+        """
         accumulator = self.uvsim.get_acc_cur()
         self.accumulator_label.delete("1.0", tk.END)
         self.accumulator_label.insert(tk.END, accumulator)
@@ -244,15 +251,23 @@ class UVSimGUI(customtkinter.CTk):
         )
 
     def default_color_scheme(self) -> None:
+        """Changes color scheme of GUI to default UVU colors.
+
+        :param: None
+        :return: None
+        """
         self.change_color_scheme("#4C721D", "#FFFFFF")
 
     def change_color_scheme(self, primary_color=None, secondary_color=None) -> None:
+        """Changes color scheme of GUI.
+        
+        :param primary_color: Primary color for GUI
+        :param secondary_color: Secondary color for GUI
+        :return: None
+        """
         if primary_color is None or secondary_color is None:
             primary_color = colorchooser.askcolor(title="Choose primary color")[1]
             secondary_color = colorchooser.askcolor(title="Choose off-color color")[1]
-
-        # if primary_color is None or secondary_color is None:
-        #     return
 
         theme = {
             "CTk": {"fg_color": ["gray95", "gray10"]},
