@@ -38,14 +38,6 @@ class DataModel:
 
         for idx, instruction in enumerate(instructions):
             self.memory[idx] = instruction
-        # while True:
-        #     try:
-        #         with open(filename, "r") as f_in:
-        #             for idx, line in enumerate(f_in):
-        #                 self.memory[idx] = int(line.strip())
-        #         break
-        #     except FileNotFoundError:
-        #         raise FileNotFoundError('File not found. Try again.')
 
     def save_program(self, filename: str) -> None:
         """Saves modified program to file. INCOMPLETE

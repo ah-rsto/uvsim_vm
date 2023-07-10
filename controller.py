@@ -150,7 +150,6 @@ class UVSimController(ArithmeticController, BranchController):
         """UVSimController initializer.
 
         :param halted: Halted callback function for ui
-        :param display_values: Display value callback function for ui
         :return: None
         """
         super().__init__()

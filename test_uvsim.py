@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, Mock
 from controller import UVSimController, ArithmeticController
 
 import unittest
@@ -7,7 +7,6 @@ from model import DataModel
 
 # Added this for testing load program.
 import os
-import sys
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -15,8 +14,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 class TestArithmeticUnit(unittest.TestCase):
     def setUp(self):
         self.arithmetic_unit = ArithmeticController()
-        self.memory = DataModel()
-        # self.memory.memory = [0] * 100
+        self.memory = DataModel(MockLoader())
 
     def test_addition_success(self):
         operand = 0
@@ -96,35 +94,50 @@ class TestArithmeticUnit(unittest.TestCase):
             self.arithmetic_unit.division(accumulator, self.memory.memory, operand)
 
 
+class MockLoader:
+    def load_from_file(self, filename: str) -> list:
+        if filename == "Test1.txt":
+            return [1007, 1008, 2007, 2008, 2109, 1109, 4300]
+        else:
+            raise FileNotFoundError(f'File "{filename}" not found')
+
+    def load_from_input(self, user_input: list) -> list:
+        return [int(num) for num in user_input]
+
+
 class TestDataModel(unittest.TestCase):
     def setUp(self):
-        self.data_model = DataModel()
+        self.loader = MockLoader()
+        self.data_model = DataModel(self.loader)
 
-    def test_accumulator(self):
+    def test_reset_accumulator(self):
         self.data_model.set_accumulator(5000)
-        self.assertEqual(self.data_model.get_accumulator(), 5000)
+        self.data_model.reset_accumulator()
+        self.assertEqual(self.data_model.get_accumulator(), 0)
 
-    def test_memory(self):
-        self.data_model.set_instruction(0, 100)
-        self.assertEqual(self.data_model.get_instruction(0), 100)
+    def test_load_program_from_file(self):
+        self.data_model.load_program("Test1.txt", True)
+        self.assertEqual(self.data_model.get_instruction(0), 1007)
 
-    def test_instructions(self):
+    def test_load_program_from_input(self):
+        self.data_model.load_program(
+            [1007, 1008, 1009, 1010, 1011, 1012, 1013, 1014], False
+        )
+        self.assertEqual(self.data_model.get_instruction(0), 1007)
+
+    def test_get_accumulator(self):
+        self.data_model.set_accumulator(100)
+        self.assertEqual(self.data_model.get_accumulator(), 100)
+
+    def test_get_instructions(self):
         test_instructions = [i for i in range(100)]
         self.data_model.set_instructions(test_instructions)
         self.assertEqual(self.data_model.get_instructions(), test_instructions)
 
-    def test_load_program(self):
-        self.data_model.load_program("Test1.txt")
-        self.assertEqual(self.data_model.get_instruction(0), 1007)
-
-    def test_load_program_file_not_found(self):
-        with self.assertRaises(FileNotFoundError):
-            self.data_model.load_program("non_existent_file.txt")
-
     def test_whole_class(self):
         # Load a program and check that the first register is updated correctly
-        self.data_model.load_program("Test2.txt")
-        self.assertEqual(self.data_model.get_instruction(0), 1009)
+        self.data_model.load_program("Test1.txt", True)
+        self.assertEqual(self.data_model.get_instruction(0), 1007)
 
         # Test the modification of the accumulator and register
         self.data_model.set_accumulator(10)
@@ -140,26 +153,24 @@ class TestDataModel(unittest.TestCase):
 class MockDataModel(DataModel):
     def __init__(self):
         self.accumulator = MagicMock()
+        self.memory = MagicMock()
+        self.loader = MagicMock()
 
 
 class TestUVSimController(unittest.TestCase):
     def setUp(self):
         self.halted_mock = MagicMock()
-        self.display_values_mock = MagicMock()
 
         self.read_from_user_mock = MagicMock()
         self.write_to_console_mock = MagicMock()
 
-        self.controller = UVSimController(self.halted_mock, self.display_values_mock)
-        self.controller.data_model = MockDataModel()
-        self.controller.data_model.get_instruction = MagicMock()
+        self.controller = UVSimController(self.halted_mock)
+        self.controller.data_model = Mock()
 
     def test_init(self):
         self.assertEqual(self.controller.halted, self.halted_mock)
-        self.assertEqual(self.controller.display_values, self.display_values_mock)
         self.assertEqual(self.controller.cursor, 0)
         self.assertEqual(self.controller.instruction, 0)
-        self.assertIsInstance(self.controller.data_model, MockDataModel)
 
     def test_reset_accumulator(self):
         self.controller.data_model.reset_accumulator = MagicMock()
@@ -175,21 +186,20 @@ class TestUVSimController(unittest.TestCase):
         self.assertEqual(self.controller.instruction, 0)
 
     def test_load_program(self):
-        self.controller.data_model.load_program = MagicMock()
-        self.controller.load_program("Test1.txt")
-        self.controller.data_model.load_program.assert_called_once_with("Test1.txt")
+        self.controller.load_program("Test1.txt", True)
+        self.controller.data_model.load_program.assert_called_once_with("Test1.txt", True)
 
     def test_get_program_text(self):
         self.controller.data_model.get_instructions = MagicMock(
             return_value=[100, -200, 300]
         )
-        expected_output = "00:   +100\n01:   -200\n02:   +300\n"
+        expected_output = "00: +0100\n01: -200\n02: +0300\n"
         self.assertEqual(self.controller.get_program_text(), expected_output)
 
     def test_get_acc_cur(self):
         self.controller.data_model.get_accumulator = MagicMock(return_value=500)
         self.controller.cursor = 3
-        expected_output = ("500\n", "3\n")
+        expected_output = (f'Accumulator: 500\nCursor: 3\n')
         self.assertEqual(self.controller.get_acc_cur(), expected_output)
 
     def test_execute_program_invalid(self):
