@@ -34,12 +34,12 @@ class GUIView(customtkinter.CTk):
         self.title("UVSim")
 
         app_width, app_height = 780, 620
-        screen_width, screen_height = (
+        self.screen_width, self.screen_height = (
             self.winfo_screenwidth(),
             self.winfo_screenheight(),
         )
-        x_offset = (screen_width // 2) - (app_width // 2)
-        y_offset = (screen_height // 2) - (app_height // 2)
+        x_offset = (self.screen_width // 2) - (app_width // 2)
+        y_offset = (self.screen_height // 2) - (app_height // 2)
 
         self.geometry(f"{app_width}x{app_height}+{x_offset}+{y_offset}")
 
