@@ -30,7 +30,7 @@ class TestDataController(unittest.TestCase):
         self.data_controller.load_file(filename)
         self.data_controller.save_file(filename)
         with open(filename, "r") as f:
-            self.assertEqual(f.readline(), "1007\n")
+            self.assertEqual(f.readline(), "+1007\n")
         
     def test_reset_accumulator(self):
         self.data_controller.set_accumulator(5000)
@@ -92,7 +92,7 @@ class TestProgramController(unittest.TestCase):
 
     def test_get_program_text(self):
         self.controller.data_model.memory = [100, -200, 300]
-        expected_output = "00: +0100\n01: -200\n02: +0300\n"  # Changed -0200 to -200
+        expected_output = "00: +0100\n01: -0200\n02: +0300\n"  # Changed -0200 to -200
         self.assertEqual(self.program_controller.get_program_text(), expected_output)
 
 
