@@ -32,7 +32,16 @@ class GUIView(customtkinter.CTk):
         PROGRAMCONTROLLER.set_write_to_console_callback(self.write_to_console)
 
         self.title("UVSim")
-        self.geometry("780x620")
+
+        app_width, app_height = 780, 620
+        screen_width, screen_height = (
+            self.winfo_screenwidth(),
+            self.winfo_screenheight(),
+        )
+        x_offset = (screen_width // 2) - (app_width // 2)
+        y_offset = (screen_height // 2) - (app_height // 2)
+
+        self.geometry(f"{app_width}x{app_height}+{x_offset}+{y_offset}")
 
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure((2, 3), weight=0)
