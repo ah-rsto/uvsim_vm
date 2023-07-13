@@ -3,7 +3,6 @@
 This module manages the view components.
 """
 
-import json
 import tkinter as tk
 from controller import ProgramController, DataController
 from tkinter import filedialog, colorchooser
