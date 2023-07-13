@@ -238,7 +238,7 @@ class ProgramController:
 
         for idx, val in enumerate(instruction_set):
             idx, val = str(idx).rjust(2, "0"), (
-                str(val).rjust(4, "0")
+                f"-{str(-1*val).rjust(4, '0')}"
                 if "-" in str(val)
                 else f"+{str(val).rjust(4, '0')}"
             )
