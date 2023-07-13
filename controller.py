@@ -34,7 +34,7 @@ class DataController:
                     for idx, val in enumerate(self.data_model.memory):
                         idx, val = str(idx).rjust(2, "0"), (
                             f"-{str(-1*val).rjust(4, '0')}"
-                            if "-" in str(val)
+                            if (val < 0)
                             else f"+{str(val).rjust(4, '0')}"
                         )
                         f_out.write(f"{val}\n")
@@ -244,7 +244,7 @@ class ProgramController:
         for idx, val in enumerate(instruction_set):
             idx, val = str(idx).rjust(2, "0"), (
                 f"-{str(-1*val).rjust(4, '0')}"
-                if "-" in str(val)
+                if (val < 0)
                 else f"+{str(val).rjust(4, '0')}"
             )
 
