@@ -154,7 +154,12 @@ class GUIView(customtkinter.CTk):
         dialog = customtkinter.CTkInputDialog(
             text="Enter a number from -9999 to 9999", title="READ Input"
         )
-        dialog.geometry("300x150+390+320")
+
+        window_width, window_height = 300, 150
+        x_offset = (self.screen_width // 2) - (window_width // 2)
+        y_offset = (self.screen_height // 2) - (window_height // 2)
+        dialog.geometry(f"{window_width}x{window_height}+{x_offset}+{y_offset}")
+
         user_input = dialog.get_input()
 
         try:
