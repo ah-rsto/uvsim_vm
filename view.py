@@ -5,10 +5,14 @@ This module manages the view components.
 
 import json
 import tkinter as tk
-from controller import UVSimController
+from controller import ProgramController, DataController
 from tkinter import filedialog, colorchooser
 import customtkinter
 import os
+
+
+DATACONTROLLER = DataController()
+PROGRAMCONTROLLER = ProgramController(DATACONTROLLER)
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -16,15 +20,17 @@ customtkinter.set_appearance_mode("dark")
 customtkinter.set_default_color_theme("./themes/uvu.json")
 
 
-class UVSimGUI(customtkinter.CTk):
+class GUIView(customtkinter.CTk):
     def __init__(self):
-        """UVSimGUI initializer.
+        """GUIView initializer.
 
         :param: None
         :return: None
         """
         super().__init__()
-        self.uvsim = UVSimController(self.halted)
+        PROGRAMCONTROLLER.set_halted_callback(self.halted)
+        PROGRAMCONTROLLER.set_read_from_user_callback(self.read_from_user)
+        PROGRAMCONTROLLER.set_write_to_console_callback(self.write_to_console)
 
         self.title("UVSim")
         self.geometry("780x620")
@@ -76,7 +82,7 @@ class UVSimGUI(customtkinter.CTk):
         self.default_btn.grid(row=2, column=0, padx=20, pady=10)
 
         self.upload_btn = customtkinter.CTkButton(
-            self.sidebar_frame, text="Upload BasicML file", command=self.open_program
+            self.sidebar_frame, text="Upload BasicML file", command=self.load_program
         )
         self.upload_btn.grid(row=6, column=0, padx=20, pady=10)
 
@@ -85,24 +91,13 @@ class UVSimGUI(customtkinter.CTk):
             row=0, column=1, rowspan=2, padx=20, pady=(20, 0), sticky="nsew"
         )
         self.program_text.insert(tk.INSERT, "BasicML program will be displayed here.")
-        self.program_text.bind("<KeyRelease>", self.limit_size, add="+")
-        self.program_text.bind("<<Paste>>", self.limit_size, add="+")
+        # self.program_text.bind("<KeyRelease>", self.limit_size, add="+")
+        # self.program_text.bind("<<Paste>>", self.limit_size, add="+")
 
         self.execute_btn = customtkinter.CTkButton(
             self, text="Run File", command=self.execute_program
         )
         self.execute_btn.grid(row=3, column=1, padx=20, pady=10, sticky="nsew")
-
-    def limit_size(self, *args) -> None:
-        """Limits size of textbox.
-
-        :param: None
-        :return: None
-        """
-        value = self.program_text.get("1.0", "end").split("\n")[:-1]
-        if len(value) > 101:
-            self.program_text.delete("1.0", "end")
-            self.program_text.insert("end", "\n".join(value[:101]))
 
     def reset_textbox(self, textbox: customtkinter.CTkTextbox, text: str) -> None:
         """Resets specified textbox content with new text.
@@ -160,12 +155,12 @@ class UVSimGUI(customtkinter.CTk):
         :return: None
         """
         self.program_text.delete("1.0", tk.END)
-        program_text = "Memory Registers:\n"
-        program_text += self.uvsim.get_program_text()
 
+        program_text = "BasicML Program:\n"
+        program_text += PROGRAMCONTROLLER.get_program_text()
         self.program_text.insert(tk.INSERT, program_text)
 
-    def open_program(self, filename: str = "") -> None:
+    def load_program(self, filename: str = "") -> None:
         """Requests program instruction set and displays for user.
 
         :param filename: String containing file path
@@ -181,53 +176,42 @@ class UVSimGUI(customtkinter.CTk):
             )
             if self.filename == "":
                 self.program_text.insert(tk.INSERT, "No file selected. Try again.")
-        with open(self.filename, "r") as f:
-            lines = f.readlines()
-            program_text = "BasicML Program:\n"
-            instruction_set = self.uvsim.data_model.get_instructions()
-            for i, val in enumerate(instruction_set):
-                idx = str(i).rjust(2, "0")
-                if i < len(lines):
-                    program_text += f"{str(idx)}: {lines[i].strip()}\n"
-                else:
-                    program_text += f"{str(idx)}: +0000\n"
 
-            self.program_text.insert(tk.INSERT, program_text)
+        DATACONTROLLER.load_file(self.filename)
+
+        self.update_program()
         self.reset_textboxes()
 
-    def get_input(self):
+    def save_program(self, filename: str = "") -> None:
+        """Requests program instruction set and displays for user.
+
+        :param filename: String containing file path
+        :return: None
+        """
+        self.filename = filename
+        while self.filename == "":
+            self.filename = filedialog.askopenfilename(
+                initialdir="/",
+                title="Select file",
+                filetypes=(("txt files", "*.txt"), ("all files", "*.*")),
+            )
+
+        DATACONTROLLER.save_file(self.filename)
+
+    def update_instructions(self):
         """Gets input from user and converts to readable format.
 
         :param: None
         :return: None
         """
-        user_input = self.program_text.get("1.0", tk.END)
-        lines = user_input.split("\n")
-        numbers = []
-        for line in lines:
-            number = line.strip()
-            if ":" in line:
-                parts = line.split(":")
-                if len(parts) > 1:
-                    number = parts[1].strip()
-            if number and number.strip("+-") != "0":
-                numbers.append(int(number[1:]))
-        return numbers
-
-    def execute_program(self) -> None:
-        """Requests program execution.
-
-        :param: None
-        :return: None
-        """
-        self.uvsim.reset_accumulator()
-        self.uvsim.reset_cursor()
-        self.uvsim.reset_instruction()
-        self.reset_textboxes()
-        update_instructions = self.get_input()
-        self.uvsim.load_program(update_instructions, False)
-        self.uvsim.execute_program(self.read_from_user, self.write_to_console)
-        self.update_program()
+        program_dialog_text = self.program_text.get("1.0", tk.END)
+        lines = program_dialog_text.split("\n")[
+            1:
+        ]  # TODO: If removing label from dialog remove index splice
+        for idx, val in enumerate(lines):
+            if idx < len(DATACONTROLLER.get_instructions()):
+                val = int(val.strip().split(": ")[1])
+                DATACONTROLLER.set_instruction(idx, val)
 
     def update_status(self):
         """Updates accumulator and cursor status.
@@ -235,9 +219,21 @@ class UVSimGUI(customtkinter.CTk):
         :param: None
         :return: None
         """
-        accumulator = self.uvsim.get_acc_cur()
         self.accumulator_label.delete("1.0", tk.END)
-        self.accumulator_label.insert(tk.END, accumulator)
+        self.accumulator_label.insert(tk.END, PROGRAMCONTROLLER.get_acc_cur())
+
+    def execute_program(self) -> None:
+        """Requests program execution.
+
+        :param: None
+        :return: None
+        """
+        DATACONTROLLER.reset_cursor()
+        DATACONTROLLER.reset_accumulator()
+        self.reset_textboxes()
+        self.update_instructions()
+        PROGRAMCONTROLLER.execute_program()
+        self.update_program()
 
     def halted(self) -> None:
         """Displays execution completion message for user.
@@ -260,7 +256,7 @@ class UVSimGUI(customtkinter.CTk):
 
     def change_color_scheme(self, primary_color=None, secondary_color=None) -> None:
         """Changes color scheme of GUI.
-        
+
         :param primary_color: Primary color for GUI
         :param secondary_color: Secondary color for GUI
         :return: None
@@ -407,8 +403,7 @@ class UVSimGUI(customtkinter.CTk):
             },
         }
 
-        with open("./themes/uvu.json", "w") as f:
-            json.dump(theme, f, indent=4)
+        DATACONTROLLER.save_theme("./themes/uvu.json", theme)
 
         customtkinter.set_default_color_theme("./themes/uvu.json")
 
@@ -440,5 +435,5 @@ class UVSimGUI(customtkinter.CTk):
         self.update()
 
 
-app = UVSimGUI()
+app = GUIView()
 app.mainloop()
