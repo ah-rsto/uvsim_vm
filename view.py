@@ -85,18 +85,25 @@ class GUIView(customtkinter.CTk):
         )
         self.upload_btn.grid(row=6, column=0, padx=20, pady=10)
 
-        self.program_text = customtkinter.CTkTextbox(self, width=300, height=536)
+        self.program_label = customtkinter.CTkLabel(self, text="BasicML program", font=customtkinter.CTkFont(size=20, weight="bold"), justify="right")
+        self.program_label.grid(row=0, column=1, columnspan=2, padx=20, pady=10)
+
+        self.program_text = customtkinter.CTkTextbox(self, width=300, height=526)
         self.program_text.grid(
-            row=0, column=1, rowspan=2, padx=20, pady=(20, 0), sticky="nsew"
+            row=1, column=1, rowspan=2, columnspan=2, padx=20, pady=(0, 10), sticky="nsew"
         )
-        self.program_text.insert(tk.INSERT, "BasicML program will be displayed here.")
         # self.program_text.bind("<KeyRelease>", self.limit_size, add="+")
         # self.program_text.bind("<<Paste>>", self.limit_size, add="+")
 
         self.execute_btn = customtkinter.CTkButton(
-            self, text="Run File", command=self.execute_program
+            self, text="Run File", command=self.execute_program, state="disabled"
         )
         self.execute_btn.grid(row=3, column=1, padx=20, pady=10, sticky="nsew")
+        
+        self.save_btn = customtkinter.CTkButton(
+            self, text="Save File", command=self.save_program, state="disabled"
+        )
+        self.save_btn.grid(row=3, column=2, padx=20, pady=10, sticky="nsew")
 
     def reset_textbox(self, textbox: customtkinter.CTkTextbox, text: str) -> None:
         """Resets specified textbox content with new text.
@@ -155,7 +162,8 @@ class GUIView(customtkinter.CTk):
         """
         self.program_text.delete("1.0", tk.END)
 
-        program_text = "BasicML Program:\n"
+        # program_text = "BasicML Program:\n"
+        program_text = ""
         program_text += PROGRAMCONTROLLER.get_program_text()
         self.program_text.insert(tk.INSERT, program_text)
 
@@ -177,25 +185,19 @@ class GUIView(customtkinter.CTk):
                 self.program_text.insert(tk.INSERT, "No file selected. Try again.")
 
         DATACONTROLLER.load_file(self.filename)
-
+        self.save_btn.configure(state="normal")
+        self.execute_btn.configure(state="normal")
         self.update_program()
         self.reset_textboxes()
 
-    def save_program(self, filename: str = "") -> None:
+    def save_program(self) -> None:
         """Requests program instruction set and displays for user.
 
-        :param filename: String containing file path
+        :param: None
         :return: None
         """
-        self.filename = filename
-        while self.filename == "":
-            self.filename = filedialog.askopenfilename(
-                initialdir="/",
-                title="Select file",
-                filetypes=(("txt files", "*.txt"), ("all files", "*.*")),
-            )
-
         DATACONTROLLER.save_file(self.filename)
+        self.write_to_console("File saved!")
 
     def update_instructions(self):
         """Gets input from user and converts to readable format.
@@ -204,9 +206,7 @@ class GUIView(customtkinter.CTk):
         :return: None
         """
         program_dialog_text = self.program_text.get("1.0", tk.END)
-        lines = program_dialog_text.split("\n")[
-            1:
-        ]  # TODO: If removing label from dialog remove index splice
+        lines = program_dialog_text.split("\n")
         for idx, val in enumerate(lines):
             if idx < len(DATACONTROLLER.get_instructions()):
                 val = int(val.strip().split(": ")[1])
@@ -242,7 +242,7 @@ class GUIView(customtkinter.CTk):
         """
         self.update_status()
         self.write_to_console(
-            "Program completed.\n\nTo run another file, click 'Upload BasicML file'"
+            "Program completed.\n\nTo run another file, click\n'Upload BasicML file'"
         )
 
     def default_color_scheme(self) -> None:
@@ -260,9 +260,22 @@ class GUIView(customtkinter.CTk):
         :param secondary_color: Secondary color for GUI
         :return: None
         """
-        if primary_color is None or secondary_color is None:
-            primary_color = colorchooser.askcolor(title="Choose primary color")[1]
-            secondary_color = colorchooser.askcolor(title="Choose off-color color")[1]
+        # if primary_color is None or secondary_color is None:
+        #     primary_color = colorchooser.askcolor(title="Choose primary color")[1]
+        #     secondary_color = colorchooser.askcolor(title="Choose off-color")[1]
+        if primary_color is None:
+            selected_color = colorchooser.askcolor(title="Choose primary color")
+            if selected_color != (None, None):
+                primary_color = selected_color[1]
+            else:
+                primary_color = "#4C721D"
+
+        if secondary_color is None:
+            selected_color = colorchooser.askcolor(title="Choose off-color")
+            if selected_color != (None, None):
+                secondary_color = selected_color[1]
+            else:
+                secondary_color = "#FFFFFF"
 
         theme = {
             "CTk": {"fg_color": ["gray95", "gray10"]},
@@ -431,6 +444,13 @@ class GUIView(customtkinter.CTk):
             hover_color=primary_color,
             border_color=secondary_color,
         )
+        self.save_btn.configure(
+            text_color=secondary_color,
+            fg_color=primary_color,
+            hover_color=primary_color,
+            border_color=secondary_color,
+        )
+        self.program_label.configure(text_color=primary_color)
         self.update()
 
 
