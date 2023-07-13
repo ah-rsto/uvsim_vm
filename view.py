@@ -212,7 +212,6 @@ class GUIView(customtkinter.CTk):
             title="Select file",
             filetypes=(("txt files", "*.txt"), ("all files", "*.*")),
         )
-        print(self.filename)
         if self.filename == "":
             self.program_text.insert(tk.INSERT, "No file selected. Try again.")
 
