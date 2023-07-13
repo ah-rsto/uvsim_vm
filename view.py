@@ -85,12 +85,23 @@ class GUIView(customtkinter.CTk):
         )
         self.upload_btn.grid(row=6, column=0, padx=20, pady=10)
 
-        self.program_label = customtkinter.CTkLabel(self, text="BasicML program", font=customtkinter.CTkFont(size=20, weight="bold"), justify="right")
+        self.program_label = customtkinter.CTkLabel(
+            self,
+            text="BasicML program",
+            font=customtkinter.CTkFont(size=20, weight="bold"),
+            justify="right",
+        )
         self.program_label.grid(row=0, column=1, columnspan=2, padx=20, pady=10)
 
         self.program_text = customtkinter.CTkTextbox(self, width=300, height=526)
         self.program_text.grid(
-            row=1, column=1, rowspan=2, columnspan=2, padx=20, pady=(0, 10), sticky="nsew"
+            row=1,
+            column=1,
+            rowspan=2,
+            columnspan=2,
+            padx=20,
+            pady=(0, 10),
+            sticky="nsew",
         )
         # self.program_text.bind("<KeyRelease>", self.limit_size, add="+")
         # self.program_text.bind("<<Paste>>", self.limit_size, add="+")
@@ -99,7 +110,7 @@ class GUIView(customtkinter.CTk):
             self, text="Run File", command=self.execute_program, state="disabled"
         )
         self.execute_btn.grid(row=3, column=1, padx=20, pady=10, sticky="nsew")
-        
+
         self.save_btn = customtkinter.CTkButton(
             self, text="Save File", command=self.save_program, state="disabled"
         )
@@ -196,6 +207,15 @@ class GUIView(customtkinter.CTk):
         :param: None
         :return: None
         """
+        self.filename = filedialog.asksaveasfilename(
+            initialdir="/",
+            title="Select file",
+            filetypes=(("txt files", "*.txt"), ("all files", "*.*")),
+        )
+        print(self.filename)
+        if self.filename == "":
+            self.program_text.insert(tk.INSERT, "No file selected. Try again.")
+
         DATACONTROLLER.save_file(self.filename)
         self.write_to_console("File saved!")
 

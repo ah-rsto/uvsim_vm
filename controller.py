@@ -31,8 +31,13 @@ class DataController:
         while True:
             try:
                 with open(filename, "w") as f_out:
-                    for line in self.data_model.memory:
-                        f_out.write(f"{line}\n".rjust(5, "0"))
+                    for idx, val in enumerate(self.data_model.memory):
+                        idx, val = str(idx).rjust(2, "0"), (
+                            f"-{str(-1*val).rjust(4, '0')}"
+                            if "-" in str(val)
+                            else f"+{str(val).rjust(4, '0')}"
+                        )
+                        f_out.write(f"{val}\n")
                 break
             except FileNotFoundError:
                 raise FileNotFoundError(f"File '{filename}' not found.")
