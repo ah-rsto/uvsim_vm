@@ -145,6 +145,7 @@ class GUIView(customtkinter.CTk):
         dialog = customtkinter.CTkInputDialog(
             text="Enter a number from -9999 to 9999", title="READ Input"
         )
+        dialog.geometry("300x150+390+320")
         user_input = dialog.get_input()
 
         try:
@@ -209,8 +210,9 @@ class GUIView(customtkinter.CTk):
         """
         self.filename = filedialog.asksaveasfilename(
             initialdir="/",
-            title="Select file",
+            title="Save file",
             filetypes=(("txt files", "*.txt"), ("all files", "*.*")),
+            defaultextension=".txt",
         )
         if self.filename == "":
             self.program_text.insert(tk.INSERT, "No file selected. Try again.")
